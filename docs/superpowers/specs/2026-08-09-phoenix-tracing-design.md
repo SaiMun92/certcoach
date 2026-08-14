@@ -33,7 +33,7 @@ Phoenix endpoints:
 ## Instrumentation strategy
 
 - **Auto-instrumentation via `openinference-instrumentation-openai`:** patches the `openai.OpenAI` client at startup. Captures all `chat.completions.create` and `embeddings.create` calls automatically — model, token counts, full prompt/response payloads. Zero changes to `generate()` or `embed()` call sites.
-- **Manual `retrieve` span** in `retrieval.py`: wraps the `retrieve()` function body, capturing `query`, `tenant`, `retrieval_mode`, `confidence`, `chunk_count`, `below_threshold` as span attributes. Also adds a manual child span for `rerank()` since it calls SAP AI Core directly (not via the OpenAI client) and is therefore not auto-instrumented.
+- **Manual `retrieve` span** in `retrieval.py`: wraps the `retrieve()` function body, capturing `query`, `tenant`, `retrieval_mode`, `confidence`, `chunk_count`, `below_threshold` as span attributes. Also adds a manual child span for `rerank()` since it calls the internal model gateway directly (not via the OpenAI client) and is therefore not auto-instrumented.
 - **FastAPI OTLP middleware** in `api.py`: makes each HTTP request the root span, so child spans (retrieval, LLM) are nested under it in the trace view.
 - **Eval run span** in `eval.py`: wraps `run_eval()` with a top-level span tagged with `prompt_version` and `judge_model`, so eval runs are filterable in Phoenix.
 

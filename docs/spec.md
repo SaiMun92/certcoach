@@ -99,7 +99,7 @@ gap**. Every retrieval and answer decision is measured by an eval harness.
 | Eval judge | cross-family (e.g. `gpt-5` or `o3` judging Claude answers) | reduces self-preference bias |
 | Tests | pytest, TDD where it fits | back up the "TDD" résumé claim |
 
-**Model gateway:** `ai-core` (OpenAI-compatible, the owner's SAP Generative AI Hub tenant).
+**Model gateway:** `ai-core` (OpenAI-compatible, the owner's internal model gateway tenant).
 Wrap it behind our own client rather than the stock Anthropic SDK. When building the client,
 consult the `claude-api` skill for params/limits, but note model IDs here are gateway aliases,
 not standard Anthropic IDs. Available models (with per-1K pricing where known):

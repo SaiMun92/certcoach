@@ -45,7 +45,7 @@ class RerankResult:
 
 
 # ---------------------------------------------------------------------------
-# Rerank — calls SAP AI Core directly (OAuth2 client-credentials) because
+# Rerank — calls the internal model gateway directly (OAuth2 client-credentials) because
 # the local proxy does not implement the /rerank subpath for cohere-rerank-pro.
 # ---------------------------------------------------------------------------
 

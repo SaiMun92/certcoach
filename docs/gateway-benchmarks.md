@@ -1,6 +1,6 @@
 # ai-core Gateway Benchmarks
 
-Gateway: `http://127.0.0.1:3030/v1` (SAP Generative AI Hub local proxy)
+Gateway: `http://127.0.0.1:3030/v1` (internal model gateway local proxy)
 Measured: 2026-08-09 — streaming TTFT, single short prompt ("Say one word."), `max_tokens=1`
 
 ## Time to First Token (ranked)

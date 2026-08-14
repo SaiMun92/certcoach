@@ -260,7 +260,7 @@ flowchart LR
         UI -.-> API
         API -.-> PHX
     end
-    API -.HTTPS OpenAI-compatible.-> EXT[ai-core gateway<br/>external, owner's SAP GenAI Hub]
+    API -.HTTPS OpenAI-compatible.-> EXT[ai-core gateway<br/>external, owner's internal model gateway]
 
     subgraph Stretch["Stretch only"]
         CF[Cloud Foundry push]

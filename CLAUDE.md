@@ -27,7 +27,7 @@ engineering. **Read `docs/spec.md` first — it is the full, approved design.**
 
 ## Model gateway
 
-- All models are served by **`ai-core`** (OpenAI-compatible, the owner's SAP Generative AI Hub).
+- All models are served by **`ai-core`** (OpenAI-compatible, the owner's internal model gateway).
   Wrap it behind our own client; model IDs are gateway aliases, not standard Anthropic IDs.
   Consult the `claude-api` skill when building the client. Full model list + pricing in `docs/spec.md`.
 - **No Azure access** — do not use or claim Azure.

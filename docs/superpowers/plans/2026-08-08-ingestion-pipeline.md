@@ -64,7 +64,7 @@
 Edit `pyproject.toml` dependencies list to append `"openai>=1.30"`. Also add `AICORE_BASE_URL` and `AICORE_API_KEY` to `.env.example`:
 
 ```
-# ai-core gateway (SAP Generative AI Hub, OpenAI-compatible)
+# ai-core gateway (internal model gateway, OpenAI-compatible)
 AICORE_BASE_URL=https://your-aicore-endpoint/v1
 AICORE_API_KEY=your-token-here
 ```

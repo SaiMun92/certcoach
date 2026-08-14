@@ -51,7 +51,7 @@ every row is tagged with a `tenant` column.
 | Reranker | Cohere Rerank Pro (`cohere-rerank-pro`) |
 | Generator | `claude-sonnet-4-6` (default), swappable via `model=` arg |
 | Eval judge | `gpt-5` (different family from generator — avoids self-grading bias) |
-| Model gateway | SAP AI Core (OpenAI-compatible proxy for embeddings/generation; direct OAuth2 for rerank) |
+| Model gateway | internal model gateway (OpenAI-compatible proxy for embeddings/generation; direct OAuth2 for rerank) |
 | UI | Streamlit |
 | Chunker tokenizer | `cl100k_base` (tiktoken) |
 | Tests | pytest, 105 tests |
@@ -223,8 +223,8 @@ not the raw scores.
 
 **File:** `backend/ai_client.py` → `rerank()`
 
-- Sends the query + top-20 candidate chunks to **Cohere Rerank Pro** via the SAP AI Core
-  deployment endpoint (`/v2/inference/deployments/{id}/rerank`).
+- Sends the query + top-20 candidate chunks to **Cohere Rerank Pro** via the internal model
+  gateway's deployment endpoint (`/v2/inference/deployments/{id}/rerank`).
 - The reranker is a cross-encoder: it jointly encodes query and each document, producing
   calibrated relevance scores (0–1 range) that are more accurate than bi-encoder cosine
   similarity.
@@ -315,7 +315,7 @@ answers. v1 remains the default.
 ### 5.3 Model gateway
 
 All generation/embedding calls go through `backend/ai_client.py` → `_get_client()`:
-an `openai.OpenAI` instance pointed at `AICORE_BASE_URL`. Model IDs are SAP AI Core
+an `openai.OpenAI` instance pointed at `AICORE_BASE_URL`. Model IDs are internal model gateway
 deployment aliases (e.g. `claude-sonnet-4-6`, `gpt-5`, `text-embedding-3-large`) —
 not standard Anthropic or OpenAI IDs. The client is `functools.lru_cache`'d to avoid
 reconstructing it per request.

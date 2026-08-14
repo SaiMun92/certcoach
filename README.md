@@ -13,14 +13,14 @@ for AI/ML-engineer roles.
 flowchart TD
     User -->|"POST /ask\nX-Tenant: aws-saa"| API["FastAPI\nbackend/api.py"]
     API --> retrieve["retrieve()\nbackend/retrieval.py"]
-    retrieve --> embed["embed()\ntext-embedding-3-large\nSAP AI Core"]
+    retrieve --> embed["embed()\ntext-embedding-3-large\ninternal model gateway"]
     retrieve --> dense["dense_search()\npgvector cosine"]
     retrieve --> sparse["sparse_search()\ntsvector BM25"]
     dense --> rrf["rrf_fuse()\nRRF k=60"]
     sparse --> rrf
-    rrf --> rerank["rerank()\ncohere-rerank-pro\nSAP AI Core direct OAuth2"]
+    rrf --> rerank["rerank()\ncohere-rerank-pro\ninternal model gateway direct OAuth2"]
     rerank --> expand["expand_chunks()\nprev+next context window"]
-    expand --> generate["answer_question()\nclaude-sonnet-4-6\nSAP AI Core"]
+    expand --> generate["answer_question()\nclaude-sonnet-4-6\ninternal model gateway"]
     generate --> API
     API --> User
 
@@ -43,8 +43,8 @@ flowchart TD
 |---|---|
 | API | FastAPI 0.111, Pydantic v2 |
 | Vector DB | PostgreSQL 16 + pgvector; tsvector BM25 |
-| Embeddings | `text-embedding-3-large` (1536-dim) via SAP AI Core |
-| Rerank | `cohere-rerank-pro` via SAP AI Core direct OAuth2 |
+| Embeddings | `text-embedding-3-large` (1536-dim) via the internal model gateway |
+| Rerank | `cohere-rerank-pro` via the internal model gateway's direct OAuth2 endpoint |
 | Generation | `claude-sonnet-4-6` (default), swappable per request |
 | Eval judge | `gpt-5` (different model family from generator) |
 | Ingestion | httpx → markdownify/pdfminer → tiktoken chunking → pgvector |
@@ -187,5 +187,5 @@ measurement, multi-tenant isolation, 3 tenants, A/B retrieval comparison.
 **Not built:** auth/accounts, streaming responses, fine-tuning, multi-node deployment,
 production hardening, fancy UI.
 
-**Not claimed:** Azure (no access). Model IDs are SAP AI Core gateway aliases.
+**Not claimed:** Azure (no access). Model IDs are internal model gateway aliases.
 # certcoach
