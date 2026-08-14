@@ -188,3 +188,4 @@ measurement, multi-tenant isolation, 3 tenants, A/B retrieval comparison.
 production hardening, fancy UI.
 
 **Not claimed:** Azure (no access). Model IDs are SAP AI Core gateway aliases.
+# certcoach
