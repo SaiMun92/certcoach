@@ -1,0 +1,25 @@
+{"question": "What storage classes does Amazon S3 offer for infrequently accessed data?", "relevant_source_ids": ["faq-s3"], "tenant": "aws-saa"}
+{"question": "How does Amazon EC2 Auto Scaling work?", "relevant_source_ids": ["faq-ec2"], "tenant": "aws-saa"}
+{"question": "What is the purpose of an Amazon VPC Internet Gateway?", "relevant_source_ids": ["faq-vpc"], "tenant": "aws-saa"}
+{"question": "What are the five pillars of the AWS Well-Architected Framework?", "relevant_source_ids": ["well-architected-framework"], "tenant": "aws-saa"}
+{"question": "What is the difference between EC2 On-Demand and Reserved Instances?", "relevant_source_ids": ["faq-ec2"], "tenant": "aws-saa"}
+{"question": "How does S3 versioning protect against accidental deletion?", "relevant_source_ids": ["faq-s3"], "tenant": "aws-saa"}
+{"question": "What is a VPC security group and how does it differ from a NACL?", "relevant_source_ids": ["faq-vpc"], "tenant": "aws-saa"}
+{"question": "What AWS SAA-C03 exam domains cover resilient architectures?", "relevant_source_ids": ["saa-exam-guide"], "tenant": "aws-saa"}
+{"question": "What are EC2 Spot Instances and when should you use them?", "relevant_source_ids": ["faq-ec2"], "tenant": "aws-saa"}
+{"question": "How does S3 Transfer Acceleration work?", "relevant_source_ids": ["faq-s3"], "tenant": "aws-saa"}
+{"question": "What is the shared responsibility model in AWS?", "relevant_source_ids": ["well-architected-framework"], "tenant": "aws-saa"}
+{"question": "How do you enable cross-region replication in S3?", "relevant_source_ids": ["faq-s3"], "tenant": "aws-saa"}
+{"question": "What is VPC peering and what are its limitations?", "relevant_source_ids": ["faq-vpc"], "tenant": "aws-saa"}
+{"question": "What instance types are memory-optimised in EC2?", "relevant_source_ids": ["faq-ec2"], "tenant": "aws-saa"}
+{"question": "What are the AWS Well-Architected security design principles?", "relevant_source_ids": ["well-architected-framework"], "tenant": "aws-saa"}
+{"question": "How does Google Cloud IAM control access to resources?", "relevant_source_ids": ["doc-iam"], "tenant": "gcp-ace"}
+{"question": "What is the difference between Compute Engine machine families?", "relevant_source_ids": ["doc-compute-engine"], "tenant": "gcp-ace"}
+{"question": "What domains does the GCP Associate Cloud Engineer exam cover?", "relevant_source_ids": ["ace-exam-guide"], "tenant": "gcp-ace"}
+{"question": "How does Google Cloud Storage organize data into buckets and objects?", "relevant_source_ids": ["doc-cloud-storage"], "tenant": "gcp-ace"}
+{"question": "What is the Google Cloud Architecture Framework's reliability pillar?", "relevant_source_ids": ["architecture-framework"], "tenant": "gcp-ace"}
+{"question": "What command initializes a Terraform working directory?", "relevant_source_ids": ["tf-cli"], "tenant": "terraform-assoc"}
+{"question": "What is the purpose of a Terraform provider?", "relevant_source_ids": ["tf-language"], "tenant": "terraform-assoc"}
+{"question": "How does Terraform state track real-world infrastructure?", "relevant_source_ids": ["tf-language"], "tenant": "terraform-assoc"}
+{"question": "What does the terraform plan command do?", "relevant_source_ids": ["tf-cli"], "tenant": "terraform-assoc"}
+{"question": "What are the exam objectives for the Terraform Associate certification?", "relevant_source_ids": ["tf-exam-review"], "tenant": "terraform-assoc"}

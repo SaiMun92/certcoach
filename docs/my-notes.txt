@@ -1,0 +1,95 @@
+# Ingestion
+- 3 sources
+  - terraform, GCP, AWS SA Assoc
+  - Extract HTML -> Markdown -> extract and ingest into chunks using markdownify. We convert to markdown because we wanted to preserve the structure like headings.
+  - Extract PDF -> extract into chunks using pdfminer.six
+- paragraph aware chunking
+  - 650 tokens, split at \n\n line. only split when the next paragraph have more than 50 tokens. 100 tokens overlap
+- Each chunk stores the following:
+  - tenant
+  - source
+  - parent_doc_id + neighbor_chunk_ids (prev/next) -> for expanded context purpose
+  - source_version
+  - source_date
+  - citation
+  - doc_type
+  - chunk_index
+  - content
+  - token_count
+  - embedding (limited to 1536 dimensions as pgvector INDEX USING IVVFLAT store >2000)
+  - fts (free text search)
+  - created_at
+
+- IVFFLAT = Inverted File with Flat Compression
+  - k-means clustering divides all vectors into buckets
+  - set local ivfflat.probes = 10 means scan the nearest 10 buckets and compare the vectors within these buckets to your query
+
+# Retrieval
+Dense Search - via Embedding cosine similarity (ORDER BY embedding <=> $query_embedding::vector)
+  - Scoring is via 1 - (embedding <=> $query_embedding::vector) AS score
+  - <=> computes cosine similarity.
+  - cosine distance = 1 - cosine similarity
+Sparse Search - via fts lookup. BM25 ranking
+  - ts_rank_cd(): scores each matching chunk by keyword density
+  - how often and how closely together the query terms appear.
+  - during ingestion of the fts column, to_tsvector() is used to convert a chunk into a searchable index
+  - plainto_tsquery('english', $query) convertes a search query into a match condition.
+    - remove all the stop words
+  - fts @@ plainto_tsquery('english', $query): means for each row it asks:
+    - does the fts column contain all the stemmed query terms? 
+  - need both dense and sparse search.
+    - Dense search - blind to exaxct tokens S3:GetObects e.g. mathematically similar to embeddings for other IAM actions and S3 operations
+    - Sparse search is blind to meaning
+- Run both and combine them with Reciprocal Rank Fusion. Using only rank positions to rank them.
+- Select top 5 chunks via RRF
+- expand the chunks via prev_chunk_id and next_chunk_id for those 5 chunks in a single batch query.
+
+
+BM25
+- Rare words matter the most
+- More mentions = more relevant, but with diminishing returns
+- Shorter, focused pages win.
+
+# Generation
+- Include the system prompt, as well as few shot examples to enforce an answer style.
+
+# Eval
+- 2 golden datasets.
+  - gold_retrieval
+  - gold_qa
+
+## gold_retrieval
+gold_retrieval: to test the retrieval:
+For each row in that golden dataset: 
+{"question": "What storage classes does S3 offer?",
+ "relevant_source_ids": ["faq-s3"],
+ "tenant": "aws-saa"}
+
+ call retrieve() to get the 20 chunks and its relevant source_id. Extract the source_id and compute the mertrics
+ - recall@5 - 1 if the result appears in the top 5 results.
+ - hit@1 - did we get it right first?
+  Retrieved: [faq-ec2, faq-s3, ...]
+  Relevant:  {faq-s3}
+  hit@1 = 0  ✗ (faq-s3 is rank 2, not rank 1)
+ - mrr@10 - how high up is it: 1 / rank 
+ - ndcg@5 - sum of 1 / log2(rank+1). Are more relevant results ranked higher than less relevant ones.
+
+## gold_qa
+Call 1 — generator (Claude)
+result = retrieve(conn, question, tenant)   # retrieval, no LLM
+response = answer_question(result)          # Claude generates an answer
+Claude reads the retrieved chunks and produces a grounded answer.
+
+Call 2 — judge (GPT-5)
+score = judge_answer(question, response.answer, item["reference_answer"], model="gpt-5")
+
+GPT-5 receives:
+Reference: "An individual S3 object can be as large as 5 TB..."
+Candidate: "The maximum size of an S3 object is 5 terabytes..."
+And returns:
+{"score": 0.95, "rationale": "Candidate correctly states 5 TB limit..."}
+
+Two different models because to prevent bias towards their own writing style.
+
+-- Things to explore
+Anthropic docs: prompt caching, contextual retrieval

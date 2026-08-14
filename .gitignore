@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Data / local artifacts
+data/
+*.db
+pgdata/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Git worktrees
+.worktrees/
+
+# SDD workspaces
+.superpowers/
+
+# Understand-Anything knowledge graph (generated artifact)
+.ua/
+
+# Claude memory (session-local)
+memory/
+
+# Playwright MCP snapshots
+.playwright-mcp/

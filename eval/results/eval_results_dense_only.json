@@ -1,0 +1,462 @@
+{
+  "aws-saa": {
+    "recall_at_5": 1.0,
+    "hit_rate_at_1": 0.9333333333333333,
+    "mrr_at_10": 0.9666666666666667,
+    "ndcg_at_5": 0.9753953169047639,
+    "answer_accuracy": 0.714,
+    "n_retrieval": 15,
+    "n_qa": 10,
+    "latency_p50_ms": 3468.6,
+    "latency_p95_ms": 6649.4,
+    "retrieval_details": [
+      {
+        "question": "What are the five pillars of the AWS Well-Architected Framework?",
+        "relevant": [
+          "well-architected-framework"
+        ],
+        "retrieved": [
+          "well-architected-framework",
+          "saa-exam-guide"
+        ],
+        "elapsed_ms": 3217.8
+      },
+      {
+        "question": "How does Amazon EC2 Auto Scaling work?",
+        "relevant": [
+          "faq-ec2"
+        ],
+        "retrieved": [
+          "faq-ec2"
+        ],
+        "elapsed_ms": 3316.9
+      },
+      {
+        "question": "What is a VPC security group and how does it differ from a NACL?",
+        "relevant": [
+          "faq-vpc"
+        ],
+        "retrieved": [
+          "faq-vpc"
+        ],
+        "elapsed_ms": 3468.6
+      },
+      {
+        "question": "What AWS SAA-C03 exam domains cover resilient architectures?",
+        "relevant": [
+          "saa-exam-guide"
+        ],
+        "retrieved": [
+          "saa-exam-guide"
+        ],
+        "elapsed_ms": 4249.7
+      },
+      {
+        "question": "What storage classes does Amazon S3 offer for infrequently accessed data?",
+        "relevant": [
+          "faq-s3"
+        ],
+        "retrieved": [
+          "faq-s3"
+        ],
+        "elapsed_ms": 4267.6
+      },
+      {
+        "question": "What is the difference between EC2 On-Demand and Reserved Instances?",
+        "relevant": [
+          "faq-ec2"
+        ],
+        "retrieved": [
+          "faq-ec2"
+        ],
+        "elapsed_ms": 4511.0
+      },
+      {
+        "question": "How does S3 Transfer Acceleration work?",
+        "relevant": [
+          "faq-s3"
+        ],
+        "retrieved": [
+          "faq-s3"
+        ],
+        "elapsed_ms": 2366.1
+      },
+      {
+        "question": "What are EC2 Spot Instances and when should you use them?",
+        "relevant": [
+          "faq-ec2"
+        ],
+        "retrieved": [
+          "faq-ec2"
+        ],
+        "elapsed_ms": 2581.1
+      },
+      {
+        "question": "How do you enable cross-region replication in S3?",
+        "relevant": [
+          "faq-s3"
+        ],
+        "retrieved": [
+          "faq-s3"
+        ],
+        "elapsed_ms": 2343.4
+      },
+      {
+        "question": "How does S3 versioning protect against accidental deletion?",
+        "relevant": [
+          "faq-s3"
+        ],
+        "retrieved": [
+          "faq-s3"
+        ],
+        "elapsed_ms": 6649.4
+      },
+      {
+        "question": "What is the purpose of an Amazon VPC Internet Gateway?",
+        "relevant": [
+          "faq-vpc"
+        ],
+        "retrieved": [
+          "faq-vpc"
+        ],
+        "elapsed_ms": 6645.4
+      },
+      {
+        "question": "What is VPC peering and what are its limitations?",
+        "relevant": [
+          "faq-vpc"
+        ],
+        "retrieved": [
+          "faq-vpc"
+        ],
+        "elapsed_ms": 2820.6
+      },
+      {
+        "question": "What is the shared responsibility model in AWS?",
+        "relevant": [
+          "well-architected-framework"
+        ],
+        "retrieved": [
+          "saa-exam-guide",
+          "well-architected-framework"
+        ],
+        "elapsed_ms": 4258.9
+      },
+      {
+        "question": "What instance types are memory-optimised in EC2?",
+        "relevant": [
+          "faq-ec2"
+        ],
+        "retrieved": [
+          "faq-ec2"
+        ],
+        "elapsed_ms": 3357.5
+      },
+      {
+        "question": "What are the AWS Well-Architected security design principles?",
+        "relevant": [
+          "well-architected-framework"
+        ],
+        "retrieved": [
+          "well-architected-framework",
+          "saa-exam-guide"
+        ],
+        "elapsed_ms": 4399.4
+      }
+    ],
+    "qa_details": [
+      {
+        "question": "What are the five pillars of the AWS Well-Architected Framework?",
+        "reference": "Operational Excellence, Security, Reliability, Performance Efficiency, and Cost Optimization. A sixth pillar, Sustainability, was added later.",
+        "candidate": "The provided context does not explicitly list all five pillars of the AWS Well-Architected Framework by name. However, the AWS Well-Architected Framework documentation does reference the key qualities the framework addresses: **secure, reliable, efficient, cost-effective, and sustainable** workloads (AWS Well-Architected Framework). These align with the five pillars: **Security, Reliability, Performance Efficiency, Cost Optimization, and Sustainability** \u2014 but the context only implies them through descriptive language rather than naming them as distinct pillars.\n\nSince the context does not formally enumerate and label the five pillars, I cannot fully confirm their exact official names from the provided material alone. I would recommend consulting the full AWS Well-Architected Framework documentation (specifically the \"Pillars\" or \"Definitions\" section) for the complete and authoritative list.",
+        "score": 0.2
+      },
+      {
+        "question": "What is the purpose of an Amazon VPC?",
+        "reference": "An Amazon Virtual Private Cloud (VPC) lets you provision a logically isolated section of the AWS Cloud where you can launch AWS resources in a virtual network you define, with full control over IP ranges, subnets, route tables, and network gateways.",
+        "candidate": "## Purpose of Amazon VPC\n\nAmazon VPC allows you to provision a **logically isolated section of the AWS cloud** where you can launch AWS resources in a virtual network that you define (Amazon VPC FAQs). You have complete control over your virtual networking environment, including selecting your own IP address ranges, creating subnets, and configuring route tables and network gateways (Amazon VPC FAQs).\n\nKey benefits include:\n- **Security**: Leverage multiple layers of security, including security groups and network access control lists, to control access to EC2 instances (Amazon VPC FAQs)\n- **Flexibility**: Create public-facing subnets for web servers and private subnets for backend systems like databases, with no internet access required for the latter (Amazon VPC FAQs)\n- **Hybrid connectivity**: Create a hardware VPN connection between your corporate datacenter and your VPC, effectively extending your datacenter into the AWS cloud (Amazon VPC FAQs)\n\nIn short, Amazon VPC lets you build a virtual network in AWS \u2014 no physical hardware required \u2014 while giving you granular control over how your resources are exposed to the internet (Amazon VPC FAQs).",
+        "score": 1.0
+      },
+      {
+        "question": "What is the maximum size of an individual Amazon S3 object?",
+        "reference": "An individual Amazon S3 object can be as large as 5 terabytes (5 TB). Objects larger than 5 GB should use multipart upload.",
+        "candidate": "The maximum size of an individual Amazon S3 object is **50 TB** (Amazon S3 FAQs). Objects can range in size from a minimum of 0 bytes up to that 50 TB maximum (Amazon S3 FAQs). However, it's important to note that the largest object uploadable in a **single PUT** operation is **5 GB**, and for objects larger than 100 MB, AWS recommends using the **multipart upload** capability (Amazon S3 FAQs).",
+        "score": 0.2
+      },
+      {
+        "question": "What are the three types of EC2 instance purchasing options?",
+        "reference": "On-Demand Instances (pay per second/hour with no commitment), Reserved Instances (1- or 3-year commitment for a discount), and Spot Instances (bid on unused capacity at lower cost but can be interrupted).",
+        "candidate": "Based on the provided context, the three main EC2 instance purchasing options are:\n\n1. **On-Demand Instances** \u2013 You pay for compute capacity by the hour with no long-term commitments (Amazon EC2 FAQs).\n\n2. **Reserved Instances (RIs)** \u2013 You commit to a 1- or 3-year term in exchange for significant discounts compared to On-Demand prices, with options for All Upfront, Partial Upfront, or No Upfront payment (Amazon EC2 FAQs).\n\n3. **Spot Instances** \u2013 These are spare EC2 capacity that can save you **up to 90% off On-Demand prices**, though AWS can interrupt them with a 2-minute notification; they are best suited for fault-tolerant, flexible workloads (Amazon EC2 FAQs).\n\nIt's worth noting the context also references **Savings Plans** as an alternative flexible pricing model offering savings up to 72%, but this is not an instance type per se \u2014 it's a commitment-based pricing model that works alongside the above options (Amazon EC2 FAQs).",
+        "score": 0.95
+      },
+      {
+        "question": "When should you use EC2 Spot Instances?",
+        "reference": "Spot Instances are best for fault-tolerant, flexible workloads that can tolerate interruption: batch processing, data analysis, background jobs, and CI/CD. They offer up to 90% discount but can be reclaimed by AWS with a 2-minute warning.",
+        "candidate": "## When to Use EC2 Spot Instances\n\nYou should use Spot Instances when you want to **reduce computing costs and have flexibility in when your applications can run** (Amazon EC2 FAQs). Spot Instances are best suited for **fault-tolerant, flexible workloads** since AWS can interrupt them with only a 2-minute notification (Amazon EC2 FAQs).\n\nSpecific workload examples well-suited for Spot include **big data and analytics, image and media rendering, machine learning, and high performance computing** \u2014 essentially workloads where interruptions can be managed and cost savings are a priority (Amazon EC2 FAQs).\n\nThe key trade-off to consider: Spot Instances can save you **up to 90% off On-Demand prices**, but your instance may be reclaimed by EC2 due to capacity requirements or if the Spot price exceeds your maximum price (Amazon EC2 FAQs). You should **avoid Spot Instances for workloads that cannot tolerate interruptions**, such as critical databases or applications requiring continuous uptime.\n\n**Best practice:** Use multiple Spot capacity pools via EC2 Auto Scaling, EC2 Fleet, or Spot Fleet to maximize availability and cost savings (Amazon EC2 FAQs).",
+        "score": 1.0
+      },
+      {
+        "question": "How does S3 versioning work?",
+        "reference": "S3 versioning preserves, retrieves, and restores every version of every object stored in an S3 bucket. Once enabled, a DELETE operation adds a delete marker rather than permanently removing the object, allowing recovery.",
+        "candidate": "## How S3 Versioning Works\n\nS3 Versioning allows you to preserve, retrieve, and restore every version of every object in a bucket. Once enabled, S3 preserves existing objects whenever you perform a PUT, POST, COPY, or DELETE operation on them \u2014 GET requests return the most recently written version by default, while older versions can be retrieved by specifying a version in the request (Amazon S3 FAQs).\n\n**On deletion:** When a DELETE operation is performed, simple (un-versioned) requests will no longer retrieve the object, but all previous versions are still preserved in the bucket and can be retrieved or restored. Only the bucket owner can permanently delete a specific version (Amazon S3 FAQs).\n\n**Extra protection:** You can enable **MFA Delete** alongside Versioning, requiring both your AWS credentials and a valid 6-digit MFA code to permanently delete a version (Amazon S3 FAQs).\n\n**Cost management:** Since S3 charges for every stored version, you can use **Lifecycle rules** to archive older versions to cheaper storage classes (e.g., S3 Glacier) or delete them after a set number of days to control costs (Amazon S3 FAQs).",
+        "score": 0.85
+      },
+      {
+        "question": "What is VPC peering?",
+        "reference": "VPC peering connects two VPCs to route traffic between them using private IPv4 or IPv6 addresses. Peering is non-transitive \u2014 traffic does not flow through a third VPC even if it is peered with both.",
+        "candidate": "## What is VPC Peering?\n\nVPC peering is a networking connection that enables you to route traffic via private IP addresses between two VPCs (Amazon VPC FAQs). It is not a gateway or a VPN connection, and does not rely on a separate piece of physical hardware \u2014 instead, AWS uses the existing infrastructure of a VPC to create the peering connection (Amazon VPC FAQs).\n\nKey characteristics to know for your exam:\n\n- **Cross-account and cross-region supported**: You can peer VPCs belonging to different AWS accounts or different regions (excluding China) (Amazon VPC FAQs).\n- **No transitive peering**: If VPC A is peered with VPC B, and VPC B is peered with VPC C, VPCs A and C are **not** automatically peered (Amazon VPC FAQs).\n- **No Internet Gateway required**: Peering connections work without one (Amazon VPC FAQs).\n- **Cost**: Creating a peering connection is free, but data transfer across it is charged (Amazon VPC FAQs).\n- **Encryption**: Intra-region peering traffic is private but **not** encrypted; inter-region peering traffic **is** encrypted using AEAD algorithms (Amazon VPC FAQs).",
+        "score": 0.85
+      },
+      {
+        "question": "What is the AWS shared responsibility model?",
+        "reference": "AWS is responsible for security OF the cloud (hardware, global infrastructure, managed services). Customers are responsible for security IN the cloud (data, IAM, OS patching on EC2, application security, network configuration).",
+        "candidate": "## AWS Shared Responsibility Model\n\nThe provided context does **not contain a detailed explanation** of the AWS shared responsibility model. The context only **references** it as a knowledge topic that SAA-C03 exam candidates should understand, listed under Domain 1: Design Secure Architectures (AWS SAA-C03 Exam Guide).\n\nThe context is insufficient to give you a complete, accurate answer about what the shared responsibility model actually defines or how it divides responsibilities between AWS and the customer.\n\n**For a full explanation, I'd recommend checking:**\n- The official [AWS Shared Responsibility Model page](https://aws.amazon.com/compliance/shared-responsibility-model/)\n- AWS Security documentation\n\n> \u26a0\ufe0f I will not fabricate details about the model's specifics, as doing so could lead to incorrect exam preparation.",
+        "score": 0.1
+      },
+      {
+        "question": "What is the difference between an S3 security group and a NACL?",
+        "reference": "Security groups are stateful firewalls at the instance/ENI level; return traffic is automatically allowed. Network ACLs (NACLs) are stateless firewalls at the subnet level; both inbound and outbound rules must explicitly allow return traffic.",
+        "candidate": "Your question asks about an \"S3 security group,\" which is not a real AWS construct \u2014 S3 does not have security groups. However, the provided context does clearly explain the difference between **VPC security groups** and **Network ACLs (NACLs)**, which may be what you're looking for.\n\n**Security Groups vs. NACLs:**\n\n- **Scope:** Security groups operate at the **EC2 instance level**, controlling traffic to/from individual instances, while NACLs operate at the **subnet level**, evaluating traffic entering and exiting a subnet (Amazon VPC FAQs).\n- **Allow/Deny rules:** Security groups can only set **Allow** rules (traffic not explicitly allowed is denied automatically), whereas NACLs can set both **Allow and Deny** rules (Amazon VPC FAQs).\n- **Stateful vs. Stateless:** Security groups perform **stateful** filtering \u2014 they automatically allow reply traffic without an explicit rule. NACLs perform **stateless** filtering \u2014 they evaluate each packet independently, requiring explicit rules for both inbound and outbound traffic (Amazon VPC FAQs).\n- **Same-subnet traffic:** NACLs do **not** filter traffic between instances within the same subnet (Amazon VPC FAQs).\n\nIf you were asking about securing access to **Amazon S3 specifically**, that is handled through **bucket policies, IAM policies, and VPC endpoints** \u2014 not security groups or NACLs (Amazon S3 FAQs).",
+        "score": 1.0
+      },
+      {
+        "question": "What is S3 Transfer Acceleration?",
+        "reference": "S3 Transfer Acceleration uses Amazon CloudFront edge locations to speed up uploads to S3. Data is routed over the optimised AWS backbone from the nearest edge to the S3 bucket, improving upload speeds for geographically distant users.",
+        "candidate": "## What is S3 Transfer Acceleration?\n\nS3 Transfer Acceleration creates fast, easy, and secure transfers of files over long distances between your client and your Amazon S3 bucket (Amazon S3 FAQs). It works by leveraging **Amazon CloudFront's globally distributed AWS Edge Locations** \u2014 as data arrives at an Edge Location, it is routed to your S3 bucket over an optimized network path (Amazon S3 FAQs).\n\nIt is best suited for **geographically dispersed users** uploading to a centralized bucket, or for workloads that regularly transfer GBs or TBs of data across continents, where it can save hours or days of transfer time (Amazon S3 FAQs). The degree of acceleration depends on available bandwidth, distance between source and destination, and packet loss rates \u2014 with greater gains typically seen over longer distances and with larger objects (Amazon S3 FAQs).\n\nNotably, if AWS determines that Transfer Acceleration would **not** be faster than a standard S3 transfer for a given upload, you will not be charged for it, and the acceleration system may be bypassed entirely (Amazon S3 FAQs).",
+        "score": 0.99
+      }
+    ]
+  },
+  "gcp-ace": {
+    "recall_at_5": 1.0,
+    "hit_rate_at_1": 1.0,
+    "mrr_at_10": 1.0,
+    "ndcg_at_5": 1.0,
+    "answer_accuracy": 0.717,
+    "n_retrieval": 5,
+    "n_qa": 10,
+    "latency_p50_ms": 3333.0,
+    "latency_p95_ms": 4616.5,
+    "retrieval_details": [
+      {
+        "question": "How does Google Cloud IAM control access to resources?",
+        "relevant": [
+          "doc-iam"
+        ],
+        "retrieved": [
+          "doc-iam",
+          "ace-exam-guide"
+        ],
+        "elapsed_ms": 2155.7
+      },
+      {
+        "question": "How does Google Cloud Storage organize data into buckets and objects?",
+        "relevant": [
+          "doc-cloud-storage"
+        ],
+        "retrieved": [
+          "doc-cloud-storage",
+          "doc-iam",
+          "ace-exam-guide"
+        ],
+        "elapsed_ms": 2213.4
+      },
+      {
+        "question": "What is the difference between Compute Engine machine families?",
+        "relevant": [
+          "doc-compute-engine"
+        ],
+        "retrieved": [
+          "doc-compute-engine",
+          "ace-exam-guide"
+        ],
+        "elapsed_ms": 3333.0
+      },
+      {
+        "question": "What domains does the GCP Associate Cloud Engineer exam cover?",
+        "relevant": [
+          "ace-exam-guide"
+        ],
+        "retrieved": [
+          "ace-exam-guide",
+          "doc-iam"
+        ],
+        "elapsed_ms": 3417.1
+      },
+      {
+        "question": "What is the Google Cloud Architecture Framework's reliability pillar?",
+        "relevant": [
+          "architecture-framework"
+        ],
+        "retrieved": [
+          "architecture-framework",
+          "doc-compute-engine",
+          "doc-iam"
+        ],
+        "elapsed_ms": 4616.5
+      }
+    ],
+    "qa_details": [
+      {
+        "question": "What is a Google Cloud service account?",
+        "reference": "A service account is a special identity for non-human principals (applications, VMs, or workloads). It is identified by an email address, and its permissions are controlled via IAM bindings. VMs use service accounts to call GCP APIs without embedding credentials.",
+        "candidate": "## Google Cloud Service Account\n\nThe provided context does not contain a detailed definition of a Google Cloud service account. The sources reference service accounts extensively \u2014 for example, covering topics like creating service accounts, assigning them to resources, managing service account impersonation, and using them in IAM policies with minimum permissions \u2014 but do not provide an explicit definitional explanation (Google Cloud \u2014 IAM docs; GCP ACE Exam Guide).\n\n**What the context does tell us** is that service accounts are a distinct identity type managed within Google Cloud IAM, separate from user accounts, and that they can be:\n- Created and attached to resources (Google Cloud \u2014 IAM docs)\n- Used in IAM policies and firewall rules (GCP ACE Exam Guide)\n- Associated with short-lived credentials and impersonation (GCP ACE Exam Guide)\n\nFor a full definition, I'd recommend consulting the **Service account overview** page directly at `cloud.google.com/iam/docs/service-account-overview`, which is linked in the IAM documentation navigation (Google Cloud \u2014 IAM docs), but its content was not included in the provided context.",
+        "score": 0.97
+      },
+      {
+        "question": "How does Google Cloud IAM grant access?",
+        "reference": "Cloud IAM grants access by binding a principal (user, service account, or group) to a role on a resource. A role is a collection of permissions. Bindings can be set at org, folder, project, or resource level and are inherited down the hierarchy.",
+        "candidate": "## How Google Cloud IAM Grants Access\n\nThe provided context gives a **high-level overview** but does not detail the exact mechanism by which IAM grants access. Here is what the context does confirm:\n\n- Google Cloud IAM **lets you create and manage permissions for Google Cloud resources** and **unifies access control for Google Cloud services into a single system** (Google Cloud \u2014 IAM docs).\n- Access is managed through **IAM policies**, which can be written via the console or client libraries, and applied to projects, folders, organizations, and other resources (Google Cloud \u2014 IAM docs).\n- Access is granted through **roles** \u2014 including basic, predefined, and custom role types \u2014 and these roles can be assigned to members, including service accounts (GCP ACE Exam Guide).\n\nHowever, the specific mechanics of *how* IAM evaluates and grants access (e.g., the policy evaluation logic, allow/deny rules, or role bindings structure) are **not covered in sufficient detail in the provided context**. For a complete explanation, I'd recommend consulting the [IAM Overview page](https://docs.cloud.google.com/iam/docs/overview) directly referenced in the documentation.",
+        "score": 0.88
+      },
+      {
+        "question": "What domains does the GCP Associate Cloud Engineer exam test?",
+        "reference": "Setting up a cloud solution environment; Planning and configuring a cloud solution; Deploying and implementing a cloud solution; Ensuring successful operation of a cloud solution; Configuring access and security.",
+        "candidate": "## GCP Associate Cloud Engineer Exam Domains\n\nThe GCP ACE exam tests five sections (GCP ACE Exam Guide):\n\n1. **Setting up a cloud solution environment** (~20%) \u2014 resource hierarchy, IAM, billing, APIs, and Cloud Identity\n2. **Planning and configuring a cloud solution** (~17.5%) \u2014 compute, data storage, and network resource planning\n3. **Deploying and implementing a cloud solution** (~25%) \u2014 Compute Engine, GKE, Cloud Run/Functions, data solutions, networking, and infrastructure as code\n4. **Ensuring successful operation of a cloud solution** (~20%) \u2014 managing compute, Kubernetes, Cloud Run, storage/databases, networking, and monitoring/logging\n5. **Configuring access and security** (~17.5%) \u2014 IAM policies, roles, and service account management\n\nThe largest single domain is **Deploying and implementing** at ~25%, while **Planning/configuring** and **Access/security** are each weighted equally at ~17.5% (GCP ACE Exam Guide).",
+        "score": 1.0
+      },
+      {
+        "question": "What is a Compute Engine preemptible VM?",
+        "reference": "A preemptible VM is a short-lived Compute Engine instance available at a much lower price (up to 80% discount). It can be reclaimed by Google at any time, so it is suitable for fault-tolerant batch and stateless workloads, not for long-running or stateful applications.",
+        "candidate": "## Insufficient Context\n\nThe provided context (Google Cloud Compute Engine docs and the GCP ACE Exam Guide) does **not contain a definition or explanation of preemptible VMs**. The documents cover general Compute Engine capabilities, the ACE exam guide topics, and mention **Spot VMs** briefly (GCP ACE Exam Guide), but do not define or describe preemptible VMs specifically.\n\nI cannot fabricate a definition without risking inaccuracy. I'd recommend checking the official Google Cloud documentation page on [Preemptible VMs](https://cloud.google.com/compute/docs/instances/preemptible) directly for an accurate answer.",
+        "score": 0.0
+      },
+      {
+        "question": "How does Google Cloud Storage differ from a filesystem?",
+        "reference": "Cloud Storage is an object store, not a filesystem. Objects are stored in buckets and identified by keys. There is no true directory hierarchy (paths simulate it). Objects are immutable \u2014 overwriting creates a new version if versioning is enabled.",
+        "candidate": "## Insufficient Context to Fully Answer\n\nThe provided context does not contain specific documentation explaining how Google Cloud Storage differs from a traditional filesystem. The sources (Google Cloud \u2014 Cloud Storage docs) describe Cloud Storage as a service that allows \"world-wide storage and retrieval of any amount of data at any time\" and mention use cases like AI/ML datasets, archival, and content distribution (Google Cloud \u2014 Cloud Storage docs), but they do not explicitly compare its object storage model to a filesystem architecture.\n\nTo properly answer this question, you would need documentation that covers concepts such as:\n- Object storage vs. hierarchical directory structures\n- Lack of true folders/inodes in Cloud Storage\n- Access via APIs rather than file paths\n\nI'd recommend consulting the **Cloud Storage key terms** or **Cloud Storage concepts** pages in the official documentation for a direct comparison.",
+        "score": 0.95
+      },
+      {
+        "question": "What is the Google Cloud Architecture Framework reliability pillar?",
+        "reference": "The reliability pillar covers designing for failure, fault tolerance, geographic distribution, automatic recovery, and testing resilience. Key practices include multi-region deployments, health checks, graceful degradation, and runbook documentation.",
+        "candidate": "## Google Cloud Architecture Framework \u2014 Reliability Pillar\n\nThe **Reliability** pillar of the Google Cloud Well-Architected Framework is defined as: **\"Design and operate resilient and highly available workloads in the cloud.\"** (Google Cloud Architecture Framework)\n\nIt is one of six pillars in the Well-Architected Framework, alongside operational excellence, security/privacy/compliance, cost optimization, performance optimization, and sustainability (Google Cloud Architecture Framework). The framework also notes that reliability principles connect to cross-pillar perspectives \u2014 for example, the financial services perspective aligns with the reliability pillar's principle about **realistic targets**, as regulatory data residency requirements influence failover region choices and recovery objectives (Google Cloud Architecture Framework).\n\nThe provided context does not include the full detail of the reliability pillar's sub-principles and recommendations beyond this definition, so for deeper guidance you would need to consult the dedicated reliability pillar page at `/architecture/framework/reliability`.",
+        "score": 0.35
+      },
+      {
+        "question": "What is the purpose of a VPC firewall rule in Google Cloud?",
+        "reference": "VPC firewall rules control traffic to and from VM instances. Rules specify direction (ingress or egress), protocol, port, target (tags, service account, or IP range), and action (allow or deny). They are evaluated in priority order.",
+        "candidate": "## Insufficient Context\n\nThe provided context does not contain a detailed explanation of the **purpose of VPC firewall rules** in Google Cloud. The sources only briefly mention firewall rules in the context of exam topics, noting that you should be able to create **ingress and egress firewall rules and policies** using criteria such as IP subnets, network tags, and service accounts (GCP ACE Exam Guide).\n\nThere is no definition or functional description of what VPC firewall rules do in the provided documentation.\n\n---\n\n**For your exam prep**, I can tell you that the context does confirm firewall rules are a networking resource associated with VPCs, and that they involve **ingress (inbound) and egress (outbound)** traffic control (GCP ACE Exam Guide) \u2014 but a full explanation of their purpose goes beyond what the provided context supports.\n\n> \ud83d\udca1 **Recommendation:** Refer to the official [Google Cloud VPC firewall rules documentation](https://cloud.google.com/firewall/docs/firewalls) for a complete explanation.",
+        "score": 0.9
+      },
+      {
+        "question": "What is a Compute Engine managed instance group?",
+        "reference": "A managed instance group (MIG) creates and manages identical VMs from an instance template. MIGs support autoscaling, autohealing (replacing unhealthy instances), and rolling updates, enabling high availability and elastic capacity.",
+        "candidate": "## Managed Instance Groups (MIGs) in Compute Engine\n\nThe provided context does not contain a detailed definition of managed instance groups. However, the context does reference them in passing:\n\nThe GCP ACE Exam Guide mentions **\"creating an autoscaled managed instance group by using an instance template\"** as a key Compute Engine deployment task (GCP ACE Exam Guide), and the Compute Engine documentation references **\"patterns for scalable and resilient apps\"** where a well-designed app \"scales up and down as demand increases and decreases\" (Google Cloud \u2014 Compute Engine docs).\n\n**The context is insufficient to provide a complete, accurate definition of a managed instance group.** To avoid fabricating details, I recommend consulting the dedicated Compute Engine documentation page on managed instance groups at `cloud.google.com/compute/docs/instance-groups` for a full explanation covering topics like:\n- Instance templates\n- Autoscaling\n- Autohealing\n- Rolling updates",
+        "score": 0.95
+      },
+      {
+        "question": "What is Google Cloud Pub/Sub?",
+        "reference": "Cloud Pub/Sub is a fully managed asynchronous messaging service. Publishers send messages to topics; subscribers receive messages from subscriptions. It supports at-least-once delivery, and is used to decouple services and ingest streaming data.",
+        "candidate": "## Google Cloud Pub/Sub\n\nThe provided context does not contain a definition or detailed explanation of Google Cloud Pub/Sub. While Pub/Sub is **mentioned** in the context as a deployable data product and as a source of events for Cloud Run and Cloud Functions, no description of what it is or how it works is included (GCP ACE Exam Guide).\n\nTo get an accurate answer, I would need context from the **Google Cloud Pub/Sub documentation**. I won't fabricate a definition outside of the provided sources.\n\n> \ud83d\udca1 **Tip for your exam prep:** For the Associate Cloud Engineer exam, you'll want to review the official [Pub/Sub documentation](https://cloud.google.com/pubsub/docs) directly to understand its core concepts, as it appears in both the data solutions and event-driven application sections of the exam guide (GCP ACE Exam Guide).",
+        "score": 0.2
+      },
+      {
+        "question": "What are Cloud Storage object lifecycle management policies?",
+        "reference": "Lifecycle management policies define rules that automatically transition objects between storage classes (e.g. Standard \u2192 Nearline after 30 days) or delete objects after a specified age or version count, reducing storage costs without manual intervention.",
+        "candidate": "## Cloud Storage Object Lifecycle Management Policies\n\nThe provided context mentions that **setting object lifecycle management policies for Cloud Storage buckets** is a key task under managing storage and database solutions (GCP ACE Exam Guide, Section 4.4). However, the context does not provide detailed information about what these policies actually do or how they are configured.\n\n**The context is insufficient** to fully explain the mechanics of object lifecycle management policies (e.g., the specific rules, conditions, or actions available). For a complete explanation, you would need to consult the Cloud Storage lifecycle management documentation directly, which covers topics like transitioning objects between storage classes (Standard \u2192 Nearline \u2192 Coldline \u2192 Archive) or automatically deleting objects after a set period.\n\n> **For the GCP ACE exam**, know that setting lifecycle policies on Cloud Storage buckets is a testable skill under Section 4.4 (GCP ACE Exam Guide), and that storage classes like **Nearline, Coldline, and Archive** are relevant options when planning data storage (GCP ACE Exam Guide, Section 2.2).",
+        "score": 0.97
+      }
+    ]
+  },
+  "terraform-assoc": {
+    "recall_at_5": 1.0,
+    "hit_rate_at_1": 0.2,
+    "mrr_at_10": 0.6,
+    "ndcg_at_5": 0.704743802857166,
+    "answer_accuracy": 0.7,
+    "n_retrieval": 5,
+    "n_qa": 5,
+    "latency_p50_ms": 3037.1,
+    "latency_p95_ms": 3202.6,
+    "retrieval_details": [
+      {
+        "question": "What command initializes a Terraform working directory?",
+        "relevant": [
+          "tf-cli"
+        ],
+        "retrieved": [
+          "tf-exam-review",
+          "tf-cli"
+        ],
+        "elapsed_ms": 1524.1
+      },
+      {
+        "question": "How does Terraform state track real-world infrastructure?",
+        "relevant": [
+          "tf-language"
+        ],
+        "retrieved": [
+          "tf-exam-review",
+          "tf-language"
+        ],
+        "elapsed_ms": 3110.7
+      },
+      {
+        "question": "What is the purpose of a Terraform provider?",
+        "relevant": [
+          "tf-language"
+        ],
+        "retrieved": [
+          "tf-exam-review",
+          "tf-language"
+        ],
+        "elapsed_ms": 3202.6
+      },
+      {
+        "question": "What does the terraform plan command do?",
+        "relevant": [
+          "tf-cli"
+        ],
+        "retrieved": [
+          "tf-exam-review",
+          "tf-cli",
+          "tf-language"
+        ],
+        "elapsed_ms": 2832.2
+      },
+      {
+        "question": "What are the exam objectives for the Terraform Associate certification?",
+        "relevant": [
+          "tf-exam-review"
+        ],
+        "retrieved": [
+          "tf-exam-review"
+        ],
+        "elapsed_ms": 3037.1
+      }
+    ],
+    "qa_details": [
+      {
+        "question": "What is the difference between terraform plan and terraform apply?",
+        "reference": "`terraform plan` shows a preview of what changes Terraform will make without executing them. `terraform apply` executes those changes. Running plan first lets you review the execution plan before committing changes to real infrastructure.",
+        "candidate": "## `terraform plan` vs. `terraform apply`\n\nBased on the provided context, these are two distinct steps in the core Terraform workflow:\n\n- **`terraform plan`** (objective 3d) is used to **generate and review an execution plan** \u2014 it shows you what changes Terraform *would* make to your infrastructure without actually making them. This is a read-only, preview step. (HashiCorp Terraform Associate Study Guide)\n\n- **`terraform apply`** (objective 3e) is used to **apply changes to infrastructure** \u2014 it actually executes the changes needed to reach the desired state defined in your configuration. (HashiCorp Terraform Associate Study Guide)\n\nIn short, `plan` is a safe, non-destructive preview, while `apply` is the step that provisions or modifies real infrastructure.\n\n> \u26a0\ufe0f **Note:** The provided context confirms these are separate workflow steps but does not include the full command reference documentation (e.g., flags, output details). For deeper detail, the study guide points to:\n> - [Command: plan](https://developer.hashicorp.com/terraform/cli/commands/plan)\n> - [Command: apply](https://developer.hashicorp.com/terraform/cli/commands/apply)",
+        "score": 1.0
+      },
+      {
+        "question": "What is Terraform state and why is it needed?",
+        "reference": "Terraform state is a file (terraform.tfstate) that maps Terraform configuration to real-world infrastructure objects. It tracks resource metadata and is required for Terraform to determine what changes need to be made on `terraform plan` and `terraform apply`.",
+        "candidate": "## Terraform State: What It Is and Why It's Needed\n\nThe provided context references Terraform state extensively across several exam objectives but does not include the full text of the **Purpose of Terraform State** documentation page that would give a detailed explanation. I can share what the context *does* indicate:\n\nThe study guide maps exam objective **2d** (\"Explain how Terraform uses and manages state\") directly to the [Purpose of Terraform State](/terraform/language/v1.12.x/state/purpose) documentation (HashiCorp Terraform Associate Study Guide). It also identifies several related state concepts as exam topics, including:\n\n- **State storage and locking** (objective 6b, 6c)\n- **Resource drift management** (objective 6d), referencing [Terraform State](/terraform/language/v1.12.x/state) and [Refresh-Only Mode](/terraform/cloud-docs/workspaces/run/modes-and-options#refresh-only-mode)\n- **Sensitive values in state** (objective 4h)\n\n(HashiCorp Terraform Associate Study Guide)\n\n**The context does not contain enough detail to fully explain what state is or all the reasons it is needed.** To get a complete answer, I'd recommend reviewing the [Purpose of Terraform State](https://developer.hashicorp.com/terraform/language/state/purpose) and [Terraform State](https://developer.hashicorp.com/terraform/language/state) documentation pages directly, which are the cited sources for these exam objectives.",
+        "score": 0.2
+      },
+      {
+        "question": "What is a Terraform provider and what does it do?",
+        "reference": "A Terraform provider is a plugin that lets Terraform interact with a specific infrastructure platform (e.g. AWS, GCP, Azure). Providers define resources and data sources. They are declared in the `required_providers` block and downloaded via `terraform init`.",
+        "candidate": "## What is a Terraform Provider?\n\nBased on the provided context, here is what can be directly stated about Terraform providers:\n\nA Terraform **provider** is a **plugin** that enables Terraform to manage specific infrastructure resources. The Terraform language configuration files tell Terraform \"what plugins to install, what infrastructure to create, and what data to fetch\" (HashiCorp Terraform Language Docs). Providers define the **resource types** available for use in your configuration \u2014 for example, the `aws` provider defines resources like `aws_vpc` and `aws_subnet` (HashiCorp Terraform Language Docs).\n\nProviders are declared in your configuration using a `provider` block and specified as requirements in the `terraform` block, including version constraints:\n\n```hcl\nterraform {\n  required_providers {\n    aws = {\n       source  = \"hashicorp/aws\"\n       version = \"~> 1.0.4\"\n    }\n  }\n}\n```\n*(HashiCorp Terraform Language Docs)*\n\nFor the Terraform Associate exam, key provider-related objectives include **installing and versioning providers**, **describing how Terraform uses providers**, and **writing configurations using multiple providers** (HashiCorp Terraform Associate Study Guide).\n\n> **Note:** The provided context references deeper provider documentation (e.g., *How Terraform Works with Plugins*) but does not include the full text of those pages, so further detail would require consulting those sources directly.",
+        "score": 1.0
+      },
+      {
+        "question": "What are Terraform workspaces used for?",
+        "reference": "Terraform workspaces allow multiple state files to exist for the same configuration, enabling environment isolation (e.g. dev/staging/prod) without duplicating config. The default workspace is named `default`. Commands: `terraform workspace new`, `terraform workspace select`.",
+        "candidate": "## Terraform Workspaces\n\nThe provided context does not contain a dedicated explanation of what Terraform workspaces are used for. The study guide references workspaces in the context of HCP Terraform \u2014 mentioning topics like organizing workspaces with projects, run triggers, variable sets, and importing infrastructure into a workspace \u2014 but does not define the core purpose of workspaces themselves (HashiCorp Terraform Associate Study Guide).\n\n**I cannot give you a complete, accurate answer from this context alone without risking fabrication.**\n\nFor a full explanation, I'd recommend reviewing the official documentation linked in the study guide:\n- **[Workspaces](https://developer.hashicorp.com/terraform/cloud-docs/workspaces)** (for HCP Terraform workspaces)\n- The CLI workspace documentation covers local workspaces for managing multiple state files from a single configuration\n\nWould you like me to answer a question that falls within the provided context?",
+        "score": 0.4
+      },
+      {
+        "question": "What is a Terraform module?",
+        "reference": "A Terraform module is a reusable container of Terraform configuration (a directory of .tf files). The root module is the working directory; child modules are called with the `module` block. Modules encapsulate resources for reuse and organization.",
+        "candidate": "## What is a Terraform Module?\n\nThe provided context does not contain a direct definition of a Terraform module. However, the context does reveal important details about modules from the **HashiCorp Terraform Associate Study Guide**:\n\n- Modules are a distinct, examinable topic area covering how Terraform **sources modules**, **variable scope within modules**, **using modules in configuration**, and **managing module versions** (HashiCorp Terraform Associate Study Guide).\n- Relevant documentation references include **Module Composition**, **Module Block Reference**, and **Manage values in modules**, suggesting modules are reusable units of configuration with their own variable scoping (HashiCorp Terraform Associate Study Guide).\n- Variables and outputs are managed *within* modules, implying modules encapsulate resources and expose inputs/outputs (HashiCorp Terraform Associate Study Guide).\n\n> \u26a0\ufe0f **Important caveat:** The context does not include the actual module documentation pages (e.g., the Module Composition or Module Block Reference pages), so a complete, fully-cited definition cannot be provided here. For a thorough explanation, I recommend reviewing the [Modules Overview tutorial](https://developer.hashicorp.com/terraform/tutorials/modules/module) and [Module Block Reference](https://developer.hashicorp.com/terraform/language/block/module) directly referenced in the study guide.",
+        "score": 0.9
+      }
+    ]
+  }
+}

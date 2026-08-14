@@ -1,0 +1,14 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY pyproject.toml .
+COPY frontend/ frontend/
+COPY backend/ backend/
+COPY ingestion/ ingestion/
+
+RUN pip install --no-cache-dir -e ".[demo]"
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "frontend/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

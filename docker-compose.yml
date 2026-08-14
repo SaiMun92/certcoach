@@ -1,0 +1,61 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: certcoach-db
+    environment:
+      POSTGRES_DB: certcoach
+      POSTGRES_USER: certcoach
+      POSTGRES_PASSWORD: certcoach
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U certcoach -d certcoach"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    container_name: certcoach-phoenix
+    ports:
+      - "6006:6006"   # UI
+      - "4317:4317"   # OTLP gRPC
+    volumes:
+      - phoenixdata:/data
+    environment:
+      PHOENIX_WORKING_DIR: /data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: certcoach-api
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://certcoach:certcoach@db:5432/certcoach
+      PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:4317
+      AICORE_BASE_URL: http://host.docker.internal:3030/v1
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: certcoach-frontend
+    ports:
+      - "8501:8501"
+    environment:
+      API_BASE: http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  phoenixdata:
+

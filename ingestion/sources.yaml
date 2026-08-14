@@ -1,0 +1,183 @@
+# CertCoach — ingestion source manifest
+# ---------------------------------------------------------------------------
+# This file is the CHECKED-IN record of corpus provenance. The raw documents it
+# points at are fetched at ingestion time into the gitignored data/ directory and
+# are NOT committed (they are copyrighted vendor docs; we do not redistribute them).
+#
+# HARD RULE — first-party, freely-published vendor documentation ONLY.
+#   NO exam "dumps" / brain-dumps / ExamTopics / Whizlabs / Tutorials Dojo or any
+#   third-party crammer content. Those are copyrighted commercial products and/or
+#   violate the certification NDA, and would make the project indefensible in a
+#   technical deep-dive. See spec.md §8 "Data sourcing & licensing".
+#
+# The ingestion script reads this manifest, fetches each `url`, and stamps the
+# per-chunk metadata the retrieval design needs: tenant, source (citation),
+# source_version, source_date (see spec.md §4, architecture.md §2).
+#
+# NOTE: the four URLs that were previously unverified were each confirmed
+# against the live first-party vendor site (HTTP 200 + correct document) on the
+# date noted inline. The remaining URLs are canonical, stable vendor paths; the
+# authoritative liveness record for ALL documents is the provenance index the
+# fetch run writes to data/fetch_index.json (per-doc http_status + ok flag).
+# The `# TODO: add` lines are optional future expansions, not unverified URLs.
+# `fetched_date`/`source_date` are populated by the ingestion script at fetch
+# time, not by hand.
+# ---------------------------------------------------------------------------
+
+version: 1
+
+# Applied to every document unless overridden per-entry.
+defaults:
+  fetched_date: null          # ISO-8601, stamped by the ingestion script at fetch time
+  corpus: true                # true = embed into retrieval store; false = eval-only source
+
+# type enum:   exam_guide | faq | whitepaper | doc | sample_questions
+# format enum: pdf | html
+
+tenants:
+
+  aws-saa:
+    display_name: "AWS Certified Solutions Architect – Associate (SAA-C03)"
+    license: >
+      (c) Amazon Web Services. Official AWS documentation, freely accessible. Used here
+      for non-commercial portfolio/demo purposes only; not redistributed or committed.
+    documents:
+
+      # --- Skeleton: defines exam domains/objectives (drives gold-set tagging) ---
+      - id: saa-exam-guide
+        title: "AWS Certified Solutions Architect – Associate (SAA-C03) Exam Guide"
+        url: "https://d1.awsstatic.com/training-and-certification/docs-sa-assoc/AWS-Certified-Solutions-Architect-Associate_Exam-Guide.pdf"  # verified 2026-07-24: 200, SAA-C03 exam guide PDF
+        type: exam_guide
+        format: pdf
+        source_version: "SAA-C03"
+        citation: "AWS SAA-C03 Exam Guide"
+
+      # --- Meat: service FAQs (highest exam signal per token) ---
+      - id: faq-ec2
+        title: "Amazon EC2 FAQs"
+        url: "https://aws.amazon.com/ec2/faqs/"
+        type: faq
+        format: html
+        citation: "Amazon EC2 FAQs"
+      - id: faq-s3
+        title: "Amazon S3 FAQs"
+        url: "https://aws.amazon.com/s3/faqs/"
+        type: faq
+        format: html
+        citation: "Amazon S3 FAQs"
+      - id: faq-vpc
+        title: "Amazon VPC FAQs"
+        url: "https://aws.amazon.com/vpc/faqs/"
+        type: faq
+        format: html
+        citation: "Amazon VPC FAQs"
+      # TODO: add faq-iam, faq-rds, faq-dynamodb, faq-route53, faq-elb, faq-ebs,
+      #       faq-cloudfront, faq-sqs, faq-sns, faq-lambda, faq-aurora
+
+      # --- Structured depth: Well-Architected Framework (table-rich) ---
+      - id: well-architected-framework
+        title: "AWS Well-Architected Framework"
+        url: "https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html"
+        type: whitepaper
+        format: html
+        citation: "AWS Well-Architected Framework"
+
+      # --- Eval only: official sample questions (NOT embedded into the corpus) ---
+      - id: saa-sample-questions
+        title: "AWS Certified Solutions Architect – Associate — Official Sample Questions"
+        url: "https://d1.awsstatic.com/training-and-certification/docs-sa-assoc/AWS-Certified-Solutions-Architect-Associate_Sample-Questions.pdf"  # verified 2026-07-24: 200, official SAA sample-questions PDF
+        type: sample_questions
+        format: pdf
+        corpus: false
+        citation: "AWS SAA-C03 Official Sample Questions"
+
+  gcp-ace:
+    display_name: "Google Cloud Associate Cloud Engineer"
+    license: >
+      (c) Google LLC. Official Google Cloud documentation, freely accessible. Used here
+      for non-commercial portfolio/demo purposes only; not redistributed or committed.
+    documents:
+
+      - id: ace-exam-guide
+        title: "Associate Cloud Engineer — Exam Guide"
+        url: "https://cloud.google.com/learn/certification/guides/cloud-engineer"
+        type: exam_guide
+        format: html
+        source_version: null     # verified 2026-07-24: 200; Google publishes no version/revision for the ACE guide
+        citation: "GCP ACE Exam Guide"
+
+      - id: doc-compute-engine
+        title: "Compute Engine documentation"
+        url: "https://cloud.google.com/compute/docs"
+        type: doc
+        format: html
+        citation: "Google Cloud — Compute Engine docs"
+      - id: doc-cloud-storage
+        title: "Cloud Storage documentation"
+        url: "https://cloud.google.com/storage/docs"
+        type: doc
+        format: html
+        citation: "Google Cloud — Cloud Storage docs"
+      - id: doc-iam
+        title: "IAM documentation"
+        url: "https://cloud.google.com/iam/docs"
+        type: doc
+        format: html
+        citation: "Google Cloud — IAM docs"
+      # TODO: add doc-vpc, doc-gke, doc-cloud-sql, doc-resource-hierarchy,
+      #       doc-billing, doc-gcloud-cli
+
+      - id: architecture-framework
+        title: "Google Cloud Architecture Framework"
+        url: "https://cloud.google.com/architecture/framework"
+        type: whitepaper
+        format: html
+        citation: "Google Cloud Architecture Framework"
+
+      # --- Eval only: official sample questions (NOT embedded into the corpus) ---
+      # NOTE: The official Google Forms URL returns a JS shell (thin content) and cannot
+      # be scraped. A hand-crafted gold eval set (20 questions, 5 sections, sourced from
+      # the official exam guide) is checked in at data/gcp-ace/ace-sample-questions.json.
+      # This entry is kept for provenance; the fetch will fail gracefully (ok=false).
+      - id: ace-sample-questions
+        title: "Associate Cloud Engineer — Official Sample Questions"
+        # verified 2026-07-24: official "Associate Cloud Engineer Sample Questions" form (22 pages),
+        # linked as "Review sample questions" from https://cloud.google.com/learn/certification/cloud-engineer
+        # Fetch fails: Google Forms requires JS rendering; hand-crafted gold set used instead.
+        url: "https://docs.google.com/forms/d/e/1FAIpQLSfexWKtXT2OSFJ-obA4iT3GmzgiOCGvjrT9OfxilWC1yPtmfQ/viewform"
+        type: sample_questions
+        format: html
+        corpus: false
+        citation: "GCP ACE Official Sample Questions"
+
+  terraform-assoc:
+    display_name: "HashiCorp Certified: Terraform Associate (003)"
+    license: >
+      (c) HashiCorp. Official HashiCorp documentation, freely accessible under BSL 1.1
+      or MPL 2.0. Used here for non-commercial portfolio/demo purposes only; not redistributed
+      or committed.
+    documents:
+
+      - id: tf-exam-review
+        title: "Terraform Associate Certification Study Guide (003)"
+        url: "https://developer.hashicorp.com/terraform/tutorials/certification-003/associate-review-003"
+        type: exam_guide
+        format: html
+        source_version: "003"
+        citation: "HashiCorp Terraform Associate Study Guide"
+
+      - id: tf-language
+        title: "Terraform Language Documentation"
+        url: "https://developer.hashicorp.com/terraform/language"
+        type: doc
+        format: html
+        source_version: "latest"
+        citation: "HashiCorp Terraform Language Docs"
+
+      - id: tf-cli
+        title: "Terraform CLI Documentation"
+        url: "https://developer.hashicorp.com/terraform/cli"
+        type: doc
+        format: html
+        source_version: "latest"
+        citation: "HashiCorp Terraform CLI Docs"
