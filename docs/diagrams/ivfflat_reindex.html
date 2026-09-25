@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ic-bg: #14161a;
+    --ic-fg: #f2f3f5;
+    --ic-muted: #a9adb6;
+    --ic-border: #33363d;
+    --ic-accent: #6aa8ff;
+    --ic-panel-bg: #1c1f25;
+  }
+  body {
+    font-family: -apple-system, sans-serif;
+    color: var(--ic-fg);
+    background: var(--ic-bg);
+    margin: 0;
+    padding: 24px;
+  }
+  h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--ic-fg);
+  }
+  .sub {
+    font-size: 12px;
+    color: var(--ic-muted);
+    margin: 0 0 12px 0;
+  }
+  .row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .panel {
+    border: 1px solid var(--ic-border);
+    border-radius: 10px;
+    padding: 14px;
+    width: 300px;
+    background: var(--ic-panel-bg);
+  }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ic-fg);
+  }
+  .panel-desc {
+    font-size: 11.5px;
+    color: var(--ic-muted);
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .arrow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    padding-top: 90px;
+    font-size: 20px;
+    color: var(--ic-muted);
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--ic-muted);
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .note {
+    font-size: 11.5px;
+    color: var(--ic-muted);
+    margin-top: 16px;
+    max-width: 720px;
+    line-height: 1.5;
+    border-left: 2px solid var(--ic-accent);
+    padding-left: 10px;
+  }
+</style>
+</head>
+<body>
+
+<h2>IVFFlat: centroids go stale as the corpus grows</h2>
+<p class="sub">3 stages — build, insert without reindex, rebuild with REINDEX</p>
+
+<div class="row">
+
+  <!-- Panel 1: initial build -->
+  <div class="panel">
+    <div class="panel-title">1. Index built (lists = 100)</div>
+    <div class="panel-desc">Existing chunks get clustered into centroids. Each centroid "owns" the nearby vectors.</div>
+    <svg width="270" height="200" viewBox="0 0 270 200">
+      <!-- cluster A -->
+      <circle cx="70" cy="60" r="40" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="70" cy="60" r="4" fill="#6aa8ff"/>
+      <circle cx="55" cy="45" r="3" fill="#f2f3f5"/>
+      <circle cx="85" cy="50" r="3" fill="#f2f3f5"/>
+      <circle cx="60" cy="80" r="3" fill="#f2f3f5"/>
+      <circle cx="90" cy="75" r="3" fill="#f2f3f5"/>
+      <circle cx="75" cy="35" r="3" fill="#f2f3f5"/>
+
+      <!-- cluster B -->
+      <circle cx="190" cy="70" r="40" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="190" cy="70" r="4" fill="#6aa8ff"/>
+      <circle cx="175" cy="55" r="3" fill="#f2f3f5"/>
+      <circle cx="205" cy="60" r="3" fill="#f2f3f5"/>
+      <circle cx="180" cy="90" r="3" fill="#f2f3f5"/>
+      <circle cx="205" cy="85" r="3" fill="#f2f3f5"/>
+
+      <!-- cluster C -->
+      <circle cx="130" cy="150" r="38" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="130" cy="150" r="4" fill="#6aa8ff"/>
+      <circle cx="115" cy="135" r="3" fill="#f2f3f5"/>
+      <circle cx="145" cy="140" r="3" fill="#f2f3f5"/>
+      <circle cx="120" cy="165" r="3" fill="#f2f3f5"/>
+      <circle cx="150" cy="160" r="3" fill="#f2f3f5"/>
+    </svg>
+  </div>
+
+  <div class="arrow-row">&#8594;</div>
+
+  <!-- Panel 2: new data inserted, no reindex -->
+  <div class="panel">
+    <div class="panel-title">2. New tenant inserted (no REINDEX)</div>
+    <div class="panel-desc">New vectors land far from all 3 old centroids, but every search still only checks those same 3. Recall degrades.</div>
+    <svg width="270" height="200" viewBox="0 0 270 200">
+      <circle cx="70" cy="60" r="40" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="70" cy="60" r="4" fill="#6aa8ff"/>
+      <circle cx="55" cy="45" r="3" fill="#f2f3f5"/>
+      <circle cx="85" cy="50" r="3" fill="#f2f3f5"/>
+      <circle cx="60" cy="80" r="3" fill="#f2f3f5"/>
+
+      <circle cx="190" cy="70" r="40" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="190" cy="70" r="4" fill="#6aa8ff"/>
+      <circle cx="175" cy="55" r="3" fill="#f2f3f5"/>
+      <circle cx="205" cy="60" r="3" fill="#f2f3f5"/>
+
+      <circle cx="130" cy="150" r="38" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="130" cy="150" r="4" fill="#6aa8ff"/>
+      <circle cx="115" cy="135" r="3" fill="#f2f3f5"/>
+      <circle cx="145" cy="140" r="3" fill="#f2f3f5"/>
+
+      <!-- new vectors, orphaned, forced into nearest existing centroid via long dashed lines -->
+      <circle cx="240" cy="20" r="3.5" fill="#ff7a70"/>
+      <circle cx="250" cy="35" r="3.5" fill="#ff7a70"/>
+      <circle cx="245" cy="10" r="3.5" fill="#ff7a70"/>
+      <line x1="240" y1="20" x2="190" y2="70" stroke="#ff7a70" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="250" y1="35" x2="190" y2="70" stroke="#ff7a70" stroke-width="1" stroke-dasharray="2,2"/>
+
+      <text x="196" y="15" font-size="9.5" fill="#ff7a70">forced into nearest</text>
+      <text x="196" y="26" font-size="9.5" fill="#ff7a70">old centroid, poor fit</text>
+    </svg>
+  </div>
+
+  <div class="arrow-row">&#8594;</div>
+
+  <!-- Panel 3: reindexed -->
+  <div class="panel">
+    <div class="panel-title">3. After REINDEX</div>
+    <div class="panel-desc">Recomputed from all current rows: a new 4th centroid now covers the new cluster. Search accuracy restored.</div>
+    <svg width="270" height="200" viewBox="0 0 270 200">
+      <circle cx="70" cy="90" r="35" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="70" cy="90" r="4" fill="#6aa8ff"/>
+      <circle cx="58" cy="78" r="3" fill="#f2f3f5"/>
+      <circle cx="85" cy="82" r="3" fill="#f2f3f5"/>
+      <circle cx="62" cy="105" r="3" fill="#f2f3f5"/>
+
+      <circle cx="175" cy="95" r="35" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="175" cy="95" r="4" fill="#6aa8ff"/>
+      <circle cx="163" cy="83" r="3" fill="#f2f3f5"/>
+      <circle cx="188" cy="88" r="3" fill="#f2f3f5"/>
+
+      <circle cx="115" cy="165" r="32" fill="none" stroke="#6aa8ff" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="115" cy="165" r="4" fill="#6aa8ff"/>
+      <circle cx="103" cy="153" r="3" fill="#f2f3f5"/>
+      <circle cx="128" cy="158" r="3" fill="#f2f3f5"/>
+
+      <!-- new 4th centroid, tight fit around new points -->
+      <circle cx="225" cy="35" r="32" fill="none" stroke="#4ad07a" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="225" cy="35" r="4" fill="#4ad07a"/>
+      <circle cx="215" cy="22" r="3.5" fill="#4ad07a"/>
+      <circle cx="235" cy="28" r="3.5" fill="#4ad07a"/>
+      <circle cx="222" cy="45" r="3.5" fill="#4ad07a"/>
+
+      <text x="180" y="15" font-size="9.5" fill="#4ad07a">new centroid,</text>
+      <text x="180" y="26" font-size="9.5" fill="#4ad07a">tight local fit</text>
+    </svg>
+  </div>
+
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="dot" style="background:#6aa8ff"></span> centroid</div>
+  <div class="legend-item"><span class="dot" style="background:#f2f3f5"></span> existing vector</div>
+  <div class="legend-item"><span class="dot" style="background:#ff7a70"></span> new vector, misassigned</div>
+  <div class="legend-item"><span class="dot" style="background:#4ad07a"></span> new vector, correctly clustered</div>
+</div>
+
+<div class="note">
+  At query time, IVFFlat only searches inside the few nearest centroids (<code>ivfflat.probes</code>).
+  If a new vector's true neighborhood has no centroid of its own, it either sits unsearched in the
+  wrong bucket or drags down that bucket's coherence — either way, recall drops. <code>REINDEX</code>
+  throws away the old centroid layout and reclusters every row currently in the table, so the new
+  cluster (panel 3, green) gets its own centroid and becomes findable again.
+</div>
+
+</body>
+</html>
