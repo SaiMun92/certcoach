@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg: #14161a;
+    --fg: #f2f3f5;
+    --muted: #a9adb6;
+    --border: #33363d;
+    --blue: #6aa8ff;
+    --panel: #1c1f25;
+    --green: #4ad07a;
+    --red: #ff7a70;
+    --amber: #f5b556;
+    --purple: #b78cf0;
+  }
+  body {
+    font-family: -apple-system, sans-serif;
+    color: var(--fg);
+    background: var(--bg);
+    margin: 0;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  h2 { font-size: 16px; font-weight: 600; margin: 0 0 4px 0; }
+  h3 { font-size: 13.5px; font-weight: 600; margin: 30px 0 8px 0; color: var(--blue); }
+  .sub { font-size: 12px; color: var(--muted); margin: 0 0 8px 0; }
+  .panel {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--panel);
+    max-width: 860px;
+    margin-bottom: 8px;
+  }
+  .desc { font-size: 12px; color: var(--muted); margin-bottom: 12px; max-width: 800px; }
+  .desc b { color: var(--fg); }
+  code {
+    background: #262a31;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11.5px;
+    color: var(--amber);
+  }
+  pre {
+    background: #0e1013;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 11.5px;
+    overflow-x: auto;
+    margin: 8px 0;
+    line-height: 1.55;
+  }
+  pre code { background: none; padding: 0; color: var(--fg); }
+  .kw { color: #ff9ec7; }
+  .str { color: var(--green); }
+  .cmt { color: #6f757f; font-style: italic; }
+  .fn { color: var(--blue); }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    border-left: 2px solid var(--blue);
+    padding-left: 12px;
+    margin-top: 12px;
+    max-width: 800px;
+  }
+  .note b { color: var(--fg); }
+  table { border-collapse: collapse; font-size: 11.5px; margin: 8px 0; }
+  td, th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+  th { color: var(--blue); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h2>Postgres full-text search: what <code>tsvector</code> and <code>GIN</code> actually do</h2>
+<p class="sub">The keyword ("sparse") half of CertCoach's hybrid retrieval, explained bottom-up</p>
+
+
+<!-- ================= STEP 1 ================= -->
+<h3>Step 1 — Raw text is useless for fast search</h3>
+<div class="panel">
+  <div class="desc">
+    You store a chunk of text. To find "which chunks mention glacier pricing?", Postgres would have to
+    <b>read every single row</b> and scan the text for those words. Fine for 10 rows. Terrible for 10 million.
+  </div>
+  <svg width="820" height="150" viewBox="0 0 820 150">
+    <text x="0" y="16" font-size="11.5" fill="#a9adb6">chunks table — the content column (raw text)</text>
+
+    <rect x="0" y="28" width="700" height="26" rx="4" fill="#262a31" stroke="#33363d"/>
+    <text x="10" y="45" font-size="11" fill="#f2f3f5">row 12: "Amazon S3 Glacier provides low-cost archival storage..."</text>
+
+    <rect x="0" y="60" width="700" height="26" rx="4" fill="#262a31" stroke="#33363d"/>
+    <text x="10" y="77" font-size="11" fill="#f2f3f5">row 47: "S3 Glacier pricing depends on retrieval speed tier..."</text>
+
+    <rect x="0" y="92" width="700" height="26" rx="4" fill="#262a31" stroke="#33363d"/>
+    <text x="10" y="109" font-size="11" fill="#f2f3f5">row 88: "Terraform provider blocks declare which cloud APIs..."</text>
+
+    <text x="715" y="45" font-size="11" fill="#ff7a70">scan</text>
+    <text x="715" y="77" font-size="11" fill="#ff7a70">scan</text>
+    <text x="715" y="109" font-size="11" fill="#ff7a70">scan</text>
+
+    <text x="0" y="140" font-size="11" fill="#ff7a70">Every row must be read and searched — a full table scan.</text>
+  </svg>
+</div>
+
+
+<!-- ================= STEP 2 ================= -->
+<h3>Step 2 — <code>to_tsvector()</code> pre-processes text into searchable tokens</h3>
+<div class="panel">
+  <div class="desc">
+    Postgres converts the text once, at write time, into a <b>tsvector</b>: a cleaned-up list of
+    word-stems plus their positions. This is the <code>fts</code> column in CertCoach's schema.
+  </div>
+
+  <svg width="820" height="230" viewBox="0 0 820 230">
+    <!-- input -->
+    <text x="0" y="16" font-size="11.5" fill="#a9adb6">INPUT — raw content</text>
+    <rect x="0" y="26" width="480" height="28" rx="4" fill="#262a31" stroke="#33363d"/>
+    <text x="10" y="45" font-size="11" fill="#f2f3f5">"Amazon S3 Glacier provides low-cost archival storage."</text>
+
+    <!-- arrow -->
+    <line x1="240" y1="58" x2="240" y2="88" stroke="#6aa8ff" stroke-width="1.6"/>
+    <polygon points="240,94 236,86 244,86" fill="#6aa8ff"/>
+    <text x="252" y="80" font-size="11" fill="#6aa8ff">to_tsvector('english', content)</text>
+
+    <!-- three transforms -->
+    <rect x="0" y="100" width="150" height="54" rx="5" fill="#1c2733" stroke="#6aa8ff"/>
+    <text x="12" y="118" font-size="10.5" fill="#6aa8ff">1. tokenize</text>
+    <text x="12" y="133" font-size="9.5" fill="#a9adb6">split into words</text>
+    <text x="12" y="146" font-size="9.5" fill="#a9adb6">"low-cost" → low-cost</text>
+
+    <rect x="165" y="100" width="165" height="54" rx="5" fill="#1c2733" stroke="#6aa8ff"/>
+    <text x="177" y="118" font-size="10.5" fill="#6aa8ff">2. stem to root</text>
+    <text x="177" y="133" font-size="9.5" fill="#a9adb6">provides → provid</text>
+    <text x="177" y="146" font-size="9.5" fill="#a9adb6">archival → archiv</text>
+
+    <rect x="345" y="100" width="175" height="54" rx="5" fill="#1c2733" stroke="#6aa8ff"/>
+    <text x="357" y="118" font-size="10.5" fill="#6aa8ff">3. drop stop-words</text>
+    <text x="357" y="133" font-size="9.5" fill="#a9adb6">"the", "for", "a" removed</text>
+    <text x="357" y="146" font-size="9.5" fill="#a9adb6">(no search value)</text>
+
+    <!-- output -->
+    <line x1="240" y1="158" x2="240" y2="180" stroke="#4ad07a" stroke-width="1.6"/>
+    <polygon points="240,186 236,178 244,178" fill="#4ad07a"/>
+
+    <text x="0" y="205" font-size="11.5" fill="#4ad07a">OUTPUT — the fts column (a tsvector)</text>
+    <rect x="0" y="212" width="700" height="0" rx="4"/>
+    <text x="0" y="226" font-size="11" fill="#f2f3f5">'amazon':1 'archiv':6 'glacier':3 'low-cost':5 'provid':4 's3':2 'storag':7</text>
+  </svg>
+
+  <div class="note">
+    <b>Why stemming matters:</b> a learner asking about <i>"archiving"</i> still matches a chunk that
+    says <i>"archival"</i> — both stem to <code>archiv</code>. <b>Why positions (<code>:1 :2 :3</code>)
+    matter:</b> they let the ranking function score chunks higher when your search words appear
+    <i>close together</i>, not scattered across the chunk.
+  </div>
+</div>
+
+
+<!-- ================= STEP 3 ================= -->
+<h3>Step 3 — GIN flips it into an inverted index</h3>
+<div class="panel">
+  <div class="desc">
+    <b>GIN = Generalized Inverted Index.</b> Instead of "row → its words", it stores
+    "word → which rows contain it". Same flip as a book's index at the back: you don't read every page
+    to find "Glacier", you look up the word and it tells you the page numbers.
+  </div>
+
+  <svg width="820" height="290" viewBox="0 0 820 290">
+    <!-- LEFT: forward -->
+    <text x="0" y="16" font-size="11.5" fill="#ff7a70">FORWARD (what the table stores) — row → words</text>
+    <rect x="0" y="26" width="330" height="94" rx="6" fill="#262a31" stroke="#33363d"/>
+    <text x="12" y="46" font-size="10.5" fill="#f2f3f5">row 12 → glacier, storag, archiv, low-cost</text>
+    <text x="12" y="66" font-size="10.5" fill="#f2f3f5">row 47 → glacier, price, retriev, tier</text>
+    <text x="12" y="86" font-size="10.5" fill="#f2f3f5">row 88 → terraform, provid, block, cloud</text>
+    <text x="12" y="108" font-size="10" fill="#ff7a70">"which rows have 'glacier'?" → must check all</text>
+
+    <!-- flip arrow -->
+    <line x1="345" y1="70" x2="405" y2="70" stroke="#f5b556" stroke-width="2"/>
+    <polygon points="411,70 403,66 403,74" fill="#f5b556"/>
+    <text x="340" y="58" font-size="10.5" fill="#f5b556">invert</text>
+
+    <!-- RIGHT: inverted -->
+    <text x="425" y="16" font-size="11.5" fill="#4ad07a">INVERTED (what GIN stores) — word → rows</text>
+    <rect x="425" y="26" width="330" height="94" rx="6" fill="#1a2b20" stroke="#4ad07a"/>
+    <text x="437" y="46" font-size="10.5" fill="#f2f3f5">'glacier'   → [12, 47]</text>
+    <text x="437" y="66" font-size="10.5" fill="#f2f3f5">'price'     → [47, 103]</text>
+    <text x="437" y="86" font-size="10.5" fill="#f2f3f5">'terraform' → [88, 91]</text>
+    <text x="437" y="108" font-size="10" fill="#4ad07a">"which rows have 'glacier'?" → instant lookup</text>
+
+    <!-- query demo -->
+    <text x="0" y="158" font-size="11.5" fill="#a9adb6">QUERY: "glacier pricing"</text>
+
+    <rect x="0" y="170" width="200" height="30" rx="4" fill="#1a2b20" stroke="#4ad07a"/>
+    <text x="12" y="190" font-size="10.5" fill="#f2f3f5">'glacier' → [12, 47]</text>
+
+    <rect x="0" y="206" width="200" height="30" rx="4" fill="#1a2b20" stroke="#4ad07a"/>
+    <text x="12" y="226" font-size="10.5" fill="#f2f3f5">'price' → [47, 103]</text>
+
+    <line x1="210" y1="203" x2="270" y2="203" stroke="#f5b556" stroke-width="1.6"/>
+    <polygon points="276,203 268,199 268,207" fill="#f5b556"/>
+    <text x="212" y="196" font-size="10" fill="#f5b556">intersect</text>
+
+    <rect x="285" y="188" width="180" height="30" rx="4" fill="#2b2117" stroke="#f5b556"/>
+    <text x="297" y="208" font-size="11" fill="#f5b556">match: row 47</text>
+
+    <text x="0" y="262" font-size="11" fill="#a9adb6">Two dictionary lookups + a set intersection — the other rows were never touched.</text>
+    <text x="0" y="280" font-size="11" fill="#a9adb6">That is the entire reason a keyword search stays fast as the corpus grows.</text>
+  </svg>
+</div>
+
+
+<!-- ================= STEP 4: THE CODE ================= -->
+<h3>Step 4 — Where this lives in CertCoach</h3>
+<div class="panel">
+  <div class="desc">
+    <b>A. Schema —</b> <code>migrations/001_chunks.sql</code>. The <code>fts</code> column is
+    <i>generated</i>: Postgres recomputes it automatically from <code>content</code> on every insert
+    or update, so it can never drift out of sync with the text.
+  </div>
+<pre><code><span class="kw">CREATE TABLE</span> chunks (
+    id         <span class="kw">BIGSERIAL PRIMARY KEY</span>,
+    tenant     <span class="kw">TEXT NOT NULL</span>,
+    content    <span class="kw">TEXT NOT NULL</span>,                <span class="cmt">-- chunk text (Markdown)</span>
+    embedding  vector(<span class="str">1536</span>),                   <span class="cmt">-- DENSE half  (meaning)</span>
+    fts        tsvector <span class="kw">GENERATED ALWAYS AS</span>    <span class="cmt">-- SPARSE half (keywords)</span>
+                   (<span class="fn">to_tsvector</span>(<span class="str">'english'</span>, content)) <span class="kw">STORED</span>
+);
+
+<span class="cmt">-- dense index: approximate nearest neighbour on the embedding</span>
+<span class="kw">CREATE INDEX</span> chunks_embedding_ivfflat_idx
+    <span class="kw">ON</span> chunks <span class="kw">USING</span> ivfflat (embedding vector_cosine_ops) <span class="kw">WITH</span> (lists = <span class="str">100</span>);
+
+<span class="cmt">-- sparse index: inverted index on the tokenised text  ← THIS LINE</span>
+<span class="kw">CREATE INDEX</span> chunks_fts_gin_idx
+    <span class="kw">ON</span> chunks <span class="kw">USING</span> gin (fts);</code></pre>
+
+  <div class="desc" style="margin-top:16px;">
+    <b>B. Query —</b> <code>backend/retrieval.py</code>, <code>sparse_search()</code>. Two different
+    things use <code>fts</code> here, and it's worth separating them:
+  </div>
+<pre><code><span class="kw">def</span> <span class="fn">sparse_search</span>(conn, query_text, tenant, k=<span class="str">20</span>):
+    <span class="kw">with</span> conn.cursor() <span class="kw">as</span> cur:
+        cur.execute(
+            <span class="str">"""
+            SELECT id, tenant, content, ... ,
+                   ts_rank_cd(fts, plainto_tsquery('english', %s)) AS score
+            FROM chunks
+            WHERE tenant = %s
+              AND fts @@ plainto_tsquery('english', %s)
+            ORDER BY score DESC
+            LIMIT %s
+            """</span>,
+            (query_text, tenant, query_text, k),
+        )
+        <span class="kw">return</span> [_row_to_chunk(row, row[<span class="str">11</span>]) <span class="kw">for</span> row <span class="kw">in</span> cur.fetchall()]</code></pre>
+
+  <table>
+    <tr><th>Piece</th><th>What it does</th></tr>
+    <tr>
+      <td><code>plainto_tsquery('english', ...)</code></td>
+      <td>Runs the <i>same</i> tokenize + stem + stop-word pipeline on the <b>user's question</b>, so query words and stored words are directly comparable.</td>
+    </tr>
+    <tr>
+      <td><code>fts @@ plainto_tsquery(...)</code></td>
+      <td>The match test: "does this row contain these tokens?" <b>This is the part the GIN index accelerates</b> — it narrows millions of rows to a handful.</td>
+    </tr>
+    <tr>
+      <td><code>ts_rank_cd(fts, ...)</code></td>
+      <td>Scores the surviving rows using the recorded token positions — matches that sit close together score higher. Ranking, not filtering.</td>
+    </tr>
+    <tr>
+      <td><code>WHERE tenant = %s</code></td>
+      <td>Multi-tenant isolation — an AWS query can never surface a GCP or Terraform chunk.</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    <b>Division of labour:</b> <code>@@</code> + GIN answers <i>"which rows are even candidates?"</i> quickly.
+    <code>ts_rank_cd</code> then answers <i>"of those, which is best?"</i>. The index filters; the
+    ranking function orders.
+  </div>
+</div>
+
+
+<!-- ================= STEP 5 ================= -->
+<h3>Step 5 — Why this sits next to the vector column instead of in Elasticsearch</h3>
+<div class="panel">
+  <svg width="820" height="215" viewBox="0 0 820 215">
+    <!-- typical stack -->
+    <text x="0" y="16" font-size="11.5" fill="#ff7a70">TYPICAL HYBRID RAG — two systems</text>
+    <rect x="0" y="28" width="150" height="58" rx="6" fill="#2b1a1a" stroke="#ff7a70"/>
+    <text x="16" y="52" font-size="11" fill="#f2f3f5">Vector DB</text>
+    <text x="16" y="70" font-size="9.5" fill="#a9adb6">Pinecone / Qdrant</text>
+
+    <rect x="170" y="28" width="150" height="58" rx="6" fill="#2b1a1a" stroke="#ff7a70"/>
+    <text x="186" y="52" font-size="11" fill="#f2f3f5">Search cluster</text>
+    <text x="186" y="70" font-size="9.5" fill="#a9adb6">Elasticsearch</text>
+
+    <text x="335" y="46" font-size="10.5" fill="#ff7a70">· two services to deploy + monitor</text>
+    <text x="335" y="62" font-size="10.5" fill="#ff7a70">· two copies of the data</text>
+    <text x="335" y="78" font-size="10.5" fill="#ff7a70">· they can silently drift apart</text>
+
+    <!-- certcoach -->
+    <text x="0" y="122" font-size="11.5" fill="#4ad07a">CERTCOACH — one table</text>
+    <rect x="0" y="134" width="320" height="62" rx="6" fill="#1a2b20" stroke="#4ad07a"/>
+    <text x="16" y="156" font-size="11" fill="#f2f3f5">Postgres · chunks table</text>
+    <text x="16" y="174" font-size="10" fill="#6aa8ff">embedding vector(1536) → ivfflat index</text>
+    <text x="16" y="189" font-size="10" fill="#6aa8ff">fts tsvector → gin index</text>
+
+    <text x="335" y="152" font-size="10.5" fill="#4ad07a">· one container in docker compose</text>
+    <text x="335" y="168" font-size="10.5" fill="#4ad07a">· one DELETE+INSERT updates both halves</text>
+    <text x="335" y="184" font-size="10.5" fill="#4ad07a">· cannot drift — same row, same transaction</text>
+  </svg>
+
+  <div class="note">
+    <b>Honesty note for interviews:</b> <code>ts_rank_cd</code> is Postgres <i>cover-density</i> ranking,
+    <b>not</b> true BM25 — it lacks BM25's IDF term-weighting and document-length normalisation.
+    It fills the same architectural slot in a hybrid pipeline, so "BM25-style" is fair;
+    claiming "we use BM25" would be overclaiming.
+  </div>
+</div>
+
+</body>
+</html>

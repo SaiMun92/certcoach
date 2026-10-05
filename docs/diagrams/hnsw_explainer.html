@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ic-bg: #14161a;
+    --ic-fg: #f2f3f5;
+    --ic-muted: #a9adb6;
+    --ic-border: #33363d;
+    --ic-accent: #6aa8ff;
+    --ic-panel-bg: #1c1f25;
+    --ic-green: #4ad07a;
+    --ic-red: #ff7a70;
+    --ic-amber: #f5b556;
+  }
+  body {
+    font-family: -apple-system, sans-serif;
+    color: var(--ic-fg);
+    background: var(--ic-bg);
+    margin: 0;
+    padding: 24px;
+  }
+  h2 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--ic-fg);
+  }
+  h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 28px 0 4px 0;
+    color: var(--ic-fg);
+  }
+  .sub {
+    font-size: 12px;
+    color: var(--ic-muted);
+    margin: 0 0 12px 0;
+  }
+  .panel {
+    border: 1px solid var(--ic-border);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--ic-panel-bg);
+    max-width: 780px;
+  }
+  .panel-desc {
+    font-size: 11.5px;
+    color: var(--ic-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    max-width: 700px;
+  }
+  .legend {
+    display: flex;
+    gap: 18px;
+    font-size: 11px;
+    color: var(--ic-muted);
+    margin: 10px 0 4px 0;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .note {
+    font-size: 11.5px;
+    color: var(--ic-muted);
+    margin-top: 14px;
+    max-width: 720px;
+    line-height: 1.5;
+    border-left: 2px solid var(--ic-accent);
+    padding-left: 10px;
+  }
+  .step {
+    font-size: 11.5px;
+    color: var(--ic-muted);
+    line-height: 1.6;
+    margin: 6px 0 0 0;
+  }
+  .step b { color: var(--ic-fg); }
+  .loop-box {
+    background: #23262d;
+    border: 1px solid var(--ic-accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 14px;
+  }
+  .loop-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ic-accent);
+    margin-bottom: 8px;
+  }
+  .loop-list {
+    font-size: 11.5px;
+    color: var(--ic-fg);
+    line-height: 1.6;
+    margin: 0 0 10px 0;
+    padding-left: 20px;
+  }
+  .loop-list li {
+    margin-bottom: 6px;
+  }
+  .loop-list b {
+    color: var(--ic-green);
+  }
+  .loop-tldr {
+    font-size: 11.5px;
+    color: var(--ic-muted);
+    line-height: 1.5;
+    border-top: 1px solid var(--ic-border);
+    padding-top: 10px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<h2>HNSW — Hierarchical Navigable Small World</h2>
+<p class="sub">Three ideas stacked: a small-world graph, greedy navigation, and a highway-style layer hierarchy</p>
+
+<!-- ============ DIAGRAM 1: small world graph (base layer only) ============ -->
+<h3>1. "Small world" — sparse graph, most links short, a few long</h3>
+<div class="panel">
+  <div class="panel-desc">
+    Every vector connects to only a few nearest neighbors (not all of them). A handful of long-range
+    "shortcut" edges mean you can still cross the whole space in very few hops — the classic
+    small-world effect.
+  </div>
+  <svg width="740" height="260" viewBox="0 0 740 260">
+    <!-- long-range shortcut edges (drawn first, dimmer) -->
+    <line x1="60" y1="220" x2="680" y2="40" stroke="#f5b556" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <line x1="60" y1="220" x2="430" y2="230" stroke="#f5b556" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <line x1="680" y1="40" x2="380" y2="60" stroke="#f5b556" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+    <!-- local cluster edges -->
+    <g stroke="#6aa8ff" stroke-width="1.2">
+      <line x1="60" y1="220" x2="110" y2="180"/>
+      <line x1="60" y1="220" x2="130" y2="235"/>
+      <line x1="110" y1="180" x2="130" y2="235"/>
+      <line x1="110" y1="180" x2="170" y2="160"/>
+
+      <line x1="380" y1="60" x2="420" y2="90"/>
+      <line x1="380" y1="60" x2="340" y2="95"/>
+      <line x1="420" y1="90" x2="340" y2="95"/>
+      <line x1="420" y1="90" x2="460" y2="130"/>
+      <line x1="340" y1="95" x2="300" y2="130"/>
+
+      <line x1="430" y1="230" x2="470" y2="200"/>
+      <line x1="430" y1="230" x2="500" y2="240"/>
+      <line x1="470" y1="200" x2="500" y2="240"/>
+      <line x1="500" y1="240" x2="560" y2="220"/>
+
+      <line x1="680" y1="40" x2="640" y2="80"/>
+      <line x1="680" y1="40" x2="700" y2="90"/>
+      <line x1="640" y1="80" x2="700" y2="90"/>
+      <line x1="640" y1="80" x2="600" y2="110"/>
+    </g>
+
+    <!-- nodes -->
+    <g fill="#f2f3f5">
+      <circle cx="60" cy="220" r="5"/>
+      <circle cx="110" cy="180" r="5"/>
+      <circle cx="130" cy="235" r="5"/>
+      <circle cx="170" cy="160" r="5"/>
+
+      <circle cx="380" cy="60" r="5"/>
+      <circle cx="420" cy="90" r="5"/>
+      <circle cx="340" cy="95" r="5"/>
+      <circle cx="460" cy="130" r="5"/>
+      <circle cx="300" cy="130" r="5"/>
+
+      <circle cx="430" cy="230" r="5"/>
+      <circle cx="470" cy="200" r="5"/>
+      <circle cx="500" cy="240" r="5"/>
+      <circle cx="560" cy="220" r="5"/>
+
+      <circle cx="680" cy="40" r="5"/>
+      <circle cx="640" cy="80" r="5"/>
+      <circle cx="700" cy="90" r="5"/>
+      <circle cx="600" cy="110" r="5"/>
+    </g>
+
+    <text x="30" y="255" font-size="10" fill="#a9adb6">cluster A</text>
+    <text x="330" y="30" font-size="10" fill="#a9adb6">cluster B</text>
+    <text x="500" y="255" font-size="10" fill="#a9adb6">cluster C</text>
+    <text x="660" y="30" font-size="10" fill="#a9adb6">cluster D</text>
+  </svg>
+  <div class="legend">
+    <div class="legend-item"><span class="dot" style="background:#f2f3f5"></span> vector node</div>
+    <div class="legend-item"><span style="width:16px;height:2px;background:#6aa8ff;display:inline-block"></span> local edge (near neighbors)</div>
+    <div class="legend-item"><span style="width:16px;height:2px;background:#f5b556;display:inline-block"></span> long-range shortcut edge</div>
+  </div>
+</div>
+
+<!-- ============ DIAGRAM 2: greedy navigable search ============ -->
+<h3>2. "Navigable" — greedy walk toward the query</h3>
+<div class="panel">
+  <div class="panel-desc">
+    Start anywhere, repeatedly jump to whichever connected neighbor is closest to the query, stop
+    when no neighbor is closer than where you are. No global view of the graph is ever needed.
+  </div>
+  <svg width="740" height="260" viewBox="0 0 740 260">
+    <line x1="60" y1="220" x2="110" y2="180" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="60" y1="220" x2="130" y2="235" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="110" y1="180" x2="130" y2="235" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="110" y1="180" x2="170" y2="160" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="60" y1="220" x2="430" y2="230" stroke="#33363d" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <line x1="430" y1="230" x2="470" y2="200" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="430" y1="230" x2="500" y2="240" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="470" y1="200" x2="500" y2="240" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="500" y1="240" x2="560" y2="220" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="470" y1="200" x2="680" y2="40" stroke="#33363d" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <line x1="680" y1="40" x2="640" y2="80" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="640" y1="80" x2="700" y2="90" stroke="#33363d" stroke-width="1.2"/>
+    <line x1="640" y1="80" x2="600" y2="110" stroke="#33363d" stroke-width="1.2"/>
+
+    <!-- highlighted walk path: 60,220 -> 430,230 -> 470,200 -> 680,40 (query near here) -->
+    <path d="M 60 220 L 430 230 L 470 200 L 680 40" fill="none" stroke="#4ad07a" stroke-width="2.5"/>
+
+    <!-- all nodes dim -->
+    <g fill="#f2f3f5" opacity="0.35">
+      <circle cx="110" cy="180" r="5"/>
+      <circle cx="130" cy="235" r="5"/>
+      <circle cx="170" cy="160" r="5"/>
+      <circle cx="500" cy="240" r="5"/>
+      <circle cx="560" cy="220" r="5"/>
+      <circle cx="640" cy="80" r="5"/>
+      <circle cx="700" cy="90" r="5"/>
+      <circle cx="600" cy="110" r="5"/>
+    </g>
+
+    <!-- path nodes highlighted -->
+    <circle cx="60" cy="220" r="6" fill="#4ad07a"/>
+    <circle cx="430" cy="230" r="6" fill="#4ad07a"/>
+    <circle cx="470" cy="200" r="6" fill="#4ad07a"/>
+    <circle cx="680" cy="40" r="7" fill="#4ad07a" stroke="#f2f3f5" stroke-width="1.5"/>
+
+    <text x="15" y="240" font-size="10" fill="#4ad07a">1. entry</text>
+    <text x="400" y="255" font-size="10" fill="#4ad07a">2. hop (shortcut)</text>
+    <text x="430" y="185" font-size="10" fill="#4ad07a">3. hop</text>
+    <text x="655" y="25" font-size="10" fill="#4ad07a">4. closest to query — stop</text>
+
+    <!-- query marker -->
+    <circle cx="705" cy="20" r="6" fill="none" stroke="#ff7a70" stroke-width="2"/>
+    <text x="695" y="12" font-size="10" fill="#ff7a70">query</text>
+  </svg>
+  <div class="step">
+    Each hop only ever looks at <b>direct neighbors</b> of the current node — never the whole graph.
+    A long-range edge (dashed grey) lets step 2 skip most of the space in one jump; local edges then
+    fine-tune the last stretch.
+  </div>
+</div>
+
+<!-- ============ DIAGRAM 3: hierarchical layers ============ -->
+<h3>3. "Hierarchical" — layers act like highways → roads → streets</h3>
+<div class="panel">
+  <div class="panel-desc">
+    Layer 0 (bottom) holds every vector, densely connected. Each layer above keeps a shrinking random
+    subset with sparser, longer-range connections. Search starts at the top and drops down one
+    layer at a time, refining its position before descending.
+  </div>
+  <svg width="740" height="420" viewBox="0 0 740 420">
+
+    <!-- LAYER 2 (top, sparse, few nodes) -->
+    <text x="10" y="30" font-size="11" fill="#a9adb6">Layer 2 — highways (fewest nodes, longest links)</text>
+    <rect x="0" y="40" width="740" height="70" rx="8" fill="none" stroke="#33363d" stroke-dasharray="3,3"/>
+    <line x1="150" y1="75" x2="560" y2="75" stroke="#f5b556" stroke-width="1.4"/>
+    <circle cx="150" cy="75" r="6" fill="#4ad07a"/>
+    <circle cx="560" cy="75" r="6" fill="#f2f3f5"/>
+    <text x="130" y="60" font-size="9.5" fill="#4ad07a">entry point</text>
+
+    <!-- drop arrow -->
+    <line x1="150" y1="81" x2="150" y2="130" stroke="#4ad07a" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="158" y="105" font-size="9.5" fill="#4ad07a">descend</text>
+
+    <!-- LAYER 1 (middle, more nodes) -->
+    <text x="10" y="150" font-size="11" fill="#a9adb6">Layer 1 — arterial roads (more nodes, medium links)</text>
+    <rect x="0" y="160" width="740" height="90" rx="8" fill="none" stroke="#33363d" stroke-dasharray="3,3"/>
+    <g stroke="#6aa8ff" stroke-width="1.2">
+      <line x1="150" y1="195" x2="260" y2="215"/>
+      <line x1="260" y1="215" x2="380" y2="200"/>
+      <line x1="380" y1="200" x2="480" y2="220"/>
+      <line x1="480" y1="220" x2="560" y2="195"/>
+    </g>
+    <circle cx="150" cy="195" r="6" fill="#4ad07a"/>
+    <circle cx="260" cy="215" r="5" fill="#f2f3f5" opacity="0.5"/>
+    <circle cx="380" cy="200" r="6" fill="#4ad07a"/>
+    <circle cx="480" cy="220" r="5" fill="#f2f3f5" opacity="0.5"/>
+    <circle cx="560" cy="195" r="5" fill="#f2f3f5" opacity="0.5"/>
+
+    <!-- refine + drop arrow -->
+    <line x1="380" y1="206" x2="380" y2="260" stroke="#4ad07a" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="388" y="235" font-size="9.5" fill="#4ad07a">refine, descend</text>
+
+    <!-- LAYER 0 (bottom, dense, all nodes) -->
+    <text x="10" y="278" font-size="11" fill="#a9adb6">Layer 0 — local streets (every vector, densest links)</text>
+    <rect x="0" y="288" width="740" height="120" rx="8" fill="none" stroke="#33363d" stroke-dasharray="3,3"/>
+    <g stroke="#6aa8ff" stroke-width="1">
+      <line x1="330" y1="320" x2="360" y2="340"/>
+      <line x1="360" y1="340" x2="400" y2="325"/>
+      <line x1="400" y1="325" x2="420" y2="355"/>
+      <line x1="330" y1="320" x2="300" y2="350"/>
+      <line x1="300" y1="350" x2="360" y2="340"/>
+      <line x1="420" y1="355" x2="450" y2="370"/>
+      <line x1="360" y1="340" x2="330" y2="375"/>
+    </g>
+    <circle cx="330" cy="320" r="6" fill="#4ad07a"/>
+    <circle cx="300" cy="350" r="5" fill="#f2f3f5" opacity="0.6"/>
+    <circle cx="360" cy="340" r="5" fill="#f2f3f5" opacity="0.6"/>
+    <circle cx="400" cy="325" r="5" fill="#f2f3f5" opacity="0.6"/>
+    <circle cx="330" cy="375" r="5" fill="#f2f3f5" opacity="0.6"/>
+    <circle cx="420" cy="355" r="7" fill="none" stroke="#ff7a70" stroke-width="2"/>
+    <circle cx="450" cy="370" r="5" fill="#f2f3f5" opacity="0.6"/>
+    <text x="426" y="350" font-size="9.5" fill="#ff7a70">query — nearest neighbor found</text>
+  </svg>
+  <div class="step">
+    <b>Search order:</b> enter at the top layer's single entry point → greedily walk (diagram 2's logic)
+    using only that layer's sparse links → land at the closest node found → drop one layer down,
+    keep that position as the new starting point → repeat the greedy walk with that layer's denser
+    links → keep descending until layer 0, where the final walk lands on the true nearest neighbor(s).
+  </div>
+
+  <div class="loop-box">
+    <div class="loop-title">The repeating pattern, per layer (this is the part to memorize)</div>
+    <ol class="loop-list">
+      <li><b>Greedy hop</b> — at the current layer, jump node-to-node to whichever neighbor is closer
+        to the query, until no neighbor is closer than where you are (this might take 1 hop or several —
+        not a fixed number).</li>
+      <li><b>Drop one layer</b> — take that final position and descend exactly one layer down (never
+        skip a layer, never jump back up).</li>
+      <li><b>Repeat the greedy hop</b> at the new layer — it's denser now, so this hop refines the
+        answer further than the layer above could.</li>
+      <li><b>Keep dropping one layer at a time</b>, repeating steps 1–3, until you finish the greedy
+        search at layer 0 — the densest layer, holding every vector — which gives the final answer.</li>
+    </ol>
+    <div class="loop-tldr">
+      In one sentence: start at the single entry point in the top (sparsest) layer, greedily hop
+      neighbor-to-neighbor until stuck, drop one layer down, repeat the greedy hop with that layer's
+      denser connections, keep dropping and refining layer by layer, until you finish the greedy
+      search at layer 0 (which holds every vector) — landing on the actual nearest chunk.
+    </div>
+  </div>
+
+  <div class="note">
+    Fewer nodes exist the higher you go, so early layers cover huge distances in very few hops
+    (like a highway crossing a country). Each layer down narrows the search to a smaller
+    neighborhood with more precision (arterial road, then local street) — so the total work stays
+    roughly <code>O(log N)</code> instead of scanning all <code>N</code> vectors.
+  </div>
+</div>
+
+<!-- ============ DIAGRAM 4: worked example with real chunk content ============ -->
+<h3>4. Worked example — a real CertCoach query</h3>
+<div class="panel">
+  <div class="panel-desc">
+    Same walk as diagram 3, but with actual chunk content instead of abstract dots. Query:
+    <b>"How is S3 Glacier priced compared to S3 Standard?"</b> The corpus has ~300 chunks across
+    3 tenants (aws-saa, gcp-ace, terraform-assoc); only 5 are shown here for clarity.
+  </div>
+
+  <svg width="740" height="460" viewBox="0 0 740 460">
+
+    <text x="10" y="26" font-size="11" fill="#a9adb6">Layer 1 — sparse (2 of ~300 chunks live here)</text>
+    <rect x="0" y="36" width="740" height="80" rx="8" fill="none" stroke="#33363d" stroke-dasharray="3,3"/>
+    <line x1="120" y1="76" x2="600" y2="76" stroke="#f5b556" stroke-width="1.4"/>
+    <circle cx="120" cy="76" r="6" fill="#4ad07a"/>
+    <circle cx="600" cy="76" r="6" fill="#f2f3f5"/>
+    <text x="20" y="60" font-size="10" fill="#4ad07a">entry: "EC2 Reserved Instance pricing tiers..."</text>
+    <text x="430" y="60" font-size="10" fill="#a9adb6">"Terraform provider blocks..."</text>
+
+    <line x1="120" y1="82" x2="120" y2="150" stroke="#4ad07a" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="128" y="120" font-size="9.5" fill="#4ad07a">closest so far → descend</text>
+
+    <text x="10" y="170" font-size="11" fill="#a9adb6">Layer 0 — dense (every chunk lives here)</text>
+    <rect x="0" y="180" width="740" height="270" rx="8" fill="none" stroke="#33363d" stroke-dasharray="3,3"/>
+
+    <!-- edges -->
+    <g stroke="#6aa8ff" stroke-width="1.2">
+      <line x1="120" y1="230" x2="260" y2="270"/>
+      <line x1="260" y1="270" x2="440" y2="250"/>
+      <line x1="440" y1="250" x2="560" y2="300"/>
+      <line x1="260" y1="270" x2="220" y2="360"/>
+    </g>
+
+    <!-- node 1: entry point (EC2 pricing) -->
+    <circle cx="120" cy="230" r="7" fill="#4ad07a"/>
+    <text x="20" y="215" font-size="10" fill="#4ad07a">1. "EC2 Reserved Instance pricing tiers..."</text>
+    <text x="60" y="248" font-size="9" fill="#a9adb6">(aws-saa · EC2 FAQ)</text>
+
+    <!-- node 2: hop, S3 storage classes overview -->
+    <circle cx="260" cy="270" r="7" fill="#4ad07a"/>
+    <text x="270" y="258" font-size="10" fill="#4ad07a">2. "S3 storage classes overview: Standard,</text>
+    <text x="270" y="272" font-size="10" fill="#4ad07a">   Intelligent-Tiering, Glacier..."</text>
+    <text x="270" y="286" font-size="9" fill="#a9adb6">(aws-saa · S3 FAQ) — hop toward query</text>
+
+    <!-- node 3: hop, Glacier retrieval costs -->
+    <circle cx="440" cy="250" r="7" fill="#4ad07a"/>
+    <text x="450" y="238" font-size="10" fill="#4ad07a">3. "Glacier retrieval time and cost tiers</text>
+    <text x="450" y="252" font-size="10" fill="#4ad07a">   (Expedited/Standard/Bulk)..."</text>
+    <text x="450" y="266" font-size="9" fill="#a9adb6">(aws-saa · S3 FAQ) — closer still</text>
+
+    <!-- query marker + final result -->
+    <circle cx="560" cy="300" r="8" fill="none" stroke="#ff7a70" stroke-width="2.2"/>
+    <text x="450" y="325" font-size="10" fill="#ff7a70">query lands here → nearest neighbor:</text>
+    <text x="450" y="339" font-size="10" fill="#ff7a70">"S3 Standard vs Glacier: per-GB storage</text>
+    <text x="450" y="353" font-size="10" fill="#ff7a70">price and access-frequency tradeoffs"</text>
+    <text x="450" y="367" font-size="9" fill="#a9adb6">(aws-saa · S3 FAQ) ✓ this is what /ask retrieves</text>
+
+    <!-- irrelevant node, never visited -->
+    <circle cx="220" cy="360" r="6" fill="#f2f3f5" opacity="0.4"/>
+    <text x="60" y="378" font-size="9.5" fill="#a9adb6" opacity="0.7">"Terraform variable validation blocks..."</text>
+    <text x="60" y="390" font-size="9.5" fill="#a9adb6" opacity="0.7">(terraform-assoc) — never visited, too far</text>
+
+    <text x="20" y="430" font-size="10" fill="#a9adb6">Total hops to answer: 1 layer-1 jump + 3 layer-0 hops — not a scan of all ~300 chunks.</text>
+  </svg>
+
+  <div class="step">
+    <b>What actually happens in CertCoach's code:</b> the query gets embedded (<code>embed()</code> in
+    <code>backend/ai_client.py</code>), then <code>dense_search()</code> in <code>backend/retrieval.py</code>
+    asks pgvector for the nearest rows by cosine distance. If the corpus used an HNSW index instead of
+    IVFFlat, this graph walk is what pgvector would do internally to answer that query — instead of the
+    cluster-and-scan approach IVFFlat actually uses. Either way the chunk returned then goes through
+    RRF fusion with the BM25/sparse results, then <code>expand_chunks()</code> pulls in its prev/next
+    neighbors before it's handed to the LLM.
+  </div>
+</div>
+
+</body>
+</html>
